@@ -38,7 +38,7 @@ gui::Slider::Slider(int x, int y, int w, int h)
 		Point cl = handle.getLastClickMousePos();
 		Point sc = handle.getScreenRectangle().a;
 		handleDragOffset = isVertical() ? (cl.y-sc.y) : (cl.x-sc.x);
-		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, onMouseMove);
+		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Slider::onMouseMove);
 	});
 	handle.setTrigger(std::make_pair(Button::State::HOVER, Button::State::DOWN));
 	handle.setTitle("");

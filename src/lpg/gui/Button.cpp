@@ -15,9 +15,9 @@ gui::Button::Button(float w, float h, float x, float y, CallbackT callback)
 	clickPos = Point(0,0);
 	addChild(caption);
 
-	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, onMouseDown);
-	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_UP, onMouseUp);
-	registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, onMouseMove);
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &Button::onMouseDown);
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_UP, &Button::onMouseUp);
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Button::onMouseMove);
 }
 
 gui::Button::Button(float w, float h, float x, float y)

@@ -3,8 +3,6 @@
 #include <fmt/format.h>
 #include <algorithm>
 #include <iostream>
-#include <execution>
-#include <regex>
 #include <filesystem>
 
 #include <lpg/a5xx/Log.hpp>

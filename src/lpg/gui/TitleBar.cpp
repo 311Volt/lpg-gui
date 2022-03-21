@@ -12,8 +12,8 @@ gui::TitleBar::TitleBar()
 	caption.setPos(Point(4,1));
 	addChild(caption);
 
-	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, onMouseDown);
-	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_UP, onMouseUp);
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TitleBar::onMouseDown);
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_UP, &TitleBar::onMouseUp);
 }
 
 gui::TitleBar::~TitleBar()
@@ -26,7 +26,7 @@ void gui::TitleBar::onMouseDown(const ALLEGRO_EVENT& ev)
 	if(IsClickEvent(ev, MouseBtn::LEFT, getScreenRectangle())) {
 		clickPos = Point(ev.mouse.x, ev.mouse.y);
 		startPos = ToPixels(parent->getAbsPos());
-		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, onMouseMove);
+		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &TitleBar::onMouseMove);
 	}
 }
 

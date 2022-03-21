@@ -13,8 +13,8 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	
 	cursor.setTitle("|");
 	
-	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, onKeyChar);
-	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, onMouseDown);
+	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, &TextBox::onKeyChar);
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TextBox::onMouseDown);
 	
 	setEdgeType(EdgeType::BEVELED_INWARD);
 	setBgColor(al_map_rgb(255,255,255));

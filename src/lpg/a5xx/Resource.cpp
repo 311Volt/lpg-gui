@@ -45,12 +45,19 @@ void al::Resource::unload()
 	status = Status::UNLOADED;
 }
 
+bool isWhitespace(char c)
+{
+	return c==' ' || c=='\t' || c=='\r' || c=='\n';
+}
+
 void al::Resource::load()
 {
 	if(!reloadable)
 		return;
 	try {
 		double t0 = al_get_time();
+		while(sourcePath.size() && isWhitespace(sourcePath.back()))
+			sourcePath.pop_back();
 		alPtr.p = loaderFn(sourcePath.c_str());
 		if(!alPtr.p) {
 			throw ResourceLoadError("loaderFn returned nullptr (likely missing or corrupted source file)");

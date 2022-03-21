@@ -8,8 +8,8 @@ gui::Desktop::Desktop()
 		al_get_display_height(al_get_current_display())
 	)
 {
-	registerEventHandler(ALLEGRO_EVENT_DISPLAY_RESIZE, onResizeEvent);
-	registerEventHandler(ALLEGRO_EVENT_KEY_DOWN, onKeyDown);
+	registerEventHandler(ALLEGRO_EVENT_DISPLAY_RESIZE, &Desktop::onResizeEvent);
+	registerEventHandler(ALLEGRO_EVENT_KEY_DOWN, &Desktop::onKeyDown);
 }
 
 gui::Desktop::~Desktop()

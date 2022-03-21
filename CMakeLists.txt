@@ -6,7 +6,12 @@ enable_testing()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "-m32")
+
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+
+if(WIN32)
+	set(CMAKE_CXX_FLAGS "-m32")
+endif()
 
 include_directories("include")
 include_directories("deps/include")
@@ -17,7 +22,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 file(REAL_PATH "deps/lib" LPG_GUI_DEPS_LIB)
 
 add_library(lpg-gui ${lpg_gui_sources})
-find_library(LIBALLEG allegro_monolith.dll ${LPG_GUI_DEPS_LIB})
 find_library(LIBFMT fmt ${LPG_GUI_DEPS_LIB})
 find_library(LIBLUNASVG lunasvg ${LPG_GUI_DEPS_LIB})
 
