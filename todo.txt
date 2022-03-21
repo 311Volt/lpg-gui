@@ -1,0 +1,51 @@
+TODO:
+	- port everything to axxegro
+	- gui::TextBox
+	- gui::ProgressBar
+	- gui::DropdownList
+	- gui::Radio
+	- gui::Image: use svg document size metadata
+	- gui theme .ini files: make paths relative to the file somehow
+	- refactoring:
+		- Window::getScreenSize -> Window::getSizeOnScreen
+		- change Point to Vec2 where appropriate
+		- const correctness
+		- the name onMouseMove() in some gui classes might be misleading (bc of reg/del in callbacks)
+	- restructuring:
+		- move all rendering to a separate backend?
+		- make resource objects guaranteed to be valid and introduce handle objects
+	- textures for windows
+	- enhancements to gui::Text:
+		- multiline support
+		- overflow=ellipses/hidden/scroll
+		- formatting tokens (as in Minecraft or TMNF) 
+	- gui::Env
+	- ResourceManager: fallback font support
+	- move #includes from headers to sources where possible
+	- make ResourceManager work in its own thread
+	- parallelize rendering and gui logic
+
+DONE:
+	- ResMgr: add u32 handles
+	- IntegerMap: reduce code redundancy
+	- IntegerMap [to replace unordered_map<uint32_t, T>]
+	- event dispatch system (registerEventHandler)
+	- fix that fucking segfault
+	- gui::Window::give
+	- ResourceManager
+		- parsing sections: [Bitmap], [Sample], [Font]
+		- ResourceManager::give(Resource&& res, std::string name)
+		- garbage collection
+	- al::Font, lpg::VectorImage: read parameters from source string
+	- lpg::VectorImage
+	- al::Resource::Resource(Resource&& other)
+	- pre-rendered windows
+	- name change: gui::Static -> gui::Text
+	- add al::Log()
+	- al::Config: unordered_map interface
+	- gui::Button as base class
+	- gui::Checkbox as Button subclass
+	- refactor: add() to addChild()
+	- gui::Checkbox
+	- gui::Image
+	- gui::Slider
