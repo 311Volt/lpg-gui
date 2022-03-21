@@ -21,10 +21,10 @@ find_library(LIBALLEG allegro_monolith.dll ${LPG_GUI_DEPS_LIB})
 find_library(LIBFMT fmt ${LPG_GUI_DEPS_LIB})
 find_library(LIBLUNASVG lunasvg ${LPG_GUI_DEPS_LIB})
 
-#option(LPG_GUI_BUILD_EXAMPLES ON)
-#if(LPG_GUI_BUILD_EXAMPLES)
+option(LPG_GUI_BUILD_EXAMPLES "Build example programs" ON)
+if(LPG_GUI_BUILD_EXAMPLES)
 	add_subdirectory("examples")
-#endif()
+endif()
 
 target_link_libraries(lpg-gui ${LIBALLEG} ${LIBFMT} ${LIBLUNASVG})
 
