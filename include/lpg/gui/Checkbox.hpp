@@ -1,9 +1,9 @@
 #ifndef LPG_GUI_CHECKBOX_H
 #define LPG_GUI_CHECKBOX_H
 
-#include "Window.hpp"
-#include "Image.hpp"
-#include "Button.hpp"
+#include <lpg/gui/Window.hpp>
+#include <lpg/gui/Image.hpp>
+#include <lpg/gui/Button.hpp>
 
 namespace gui {
 	class Checkbox: public Button {

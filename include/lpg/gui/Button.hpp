@@ -1,9 +1,10 @@
 #ifndef LPG_GUI_BUTTON_H
 #define LPG_GUI_BUTTON_H
 
-#include "../a5xx/Font.hpp"
-#include "Text.hpp"
-#include "Window.hpp"
+#include <axxegro/resources/Font.hpp>
+
+#include <lpg/gui/Text.hpp>
+#include <lpg/gui/Window.hpp>
 #include <functional>
 #include <utility>
 

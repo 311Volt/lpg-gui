@@ -1,9 +1,10 @@
 #ifndef LPG_GUI_SLIDER_H
 #define LPG_GUI_SLIDER_H
 
-#include "Window.hpp"
-#include "Button.hpp"
-#include "Text.hpp"
+#include <lpg/gui/Window.hpp>
+#include <lpg/gui/Button.hpp>
+#include <lpg/gui/Text.hpp>
+
 #include <cstdint>
 #include <functional>
 

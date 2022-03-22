@@ -1,10 +1,11 @@
 #ifndef LPG_GUI_TEXT_H
 #define LPG_GUI_TEXT_H
 
-#include "Window.hpp"
-#include "Math.hpp"
-#include "../a5xx/Font.hpp"
-#include "../a5xx/Bitmap.hpp"
+#include <lpg/gui/Window.hpp>
+
+#include <axxegro/math/math.hpp>
+#include <axxegro/resources/Font.hpp>
+#include <axxegro/resources/Bitmap.hpp>
 
 namespace gui {
 	class Text : public Window {

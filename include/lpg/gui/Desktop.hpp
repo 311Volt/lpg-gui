@@ -5,8 +5,9 @@
 #include <string>
 #include <memory>
 
-#include "../a5xx/Bitmap.hpp"
-#include "Window.hpp"
+#include <axxegro/resources/Bitmap.hpp>
+
+#include <lpg/gui/Window.hpp>
 
 namespace gui {
 

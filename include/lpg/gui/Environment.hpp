@@ -1,7 +1,7 @@
-#ifndef LPG_GUI_ENVIRONMENT_H
-#define LPG_GUI_ENVIRONMENT_H
+#ifndef INCLUDE_LPG_GUI_ENVIRONMENT
+#define INCLUDE_LPG_GUI_ENVIRONMENT
 
-#include "../util/ResourceManager.hpp"
+#include <lpg/util/ResourceManager.hpp>
 
 namespace gui {
 	class Environment {
@@ -15,4 +15,4 @@ namespace gui {
 	};
 }
 
-#endif // LPG_GUI_ENVIRONMENT_H
+#endif /* INCLUDE_LPG_GUI_ENVIRONMENT */

@@ -1,8 +1,9 @@
 #ifndef LPG_GUI_MOUSE_H
 #define LPG_GUI_MOUSE_H
 
-#include "Math.hpp"
 #include <allegro5/allegro.h>
+
+#include <axxegro/math/math.hpp>
 
 namespace gui {
 	enum class MouseBtn: unsigned {

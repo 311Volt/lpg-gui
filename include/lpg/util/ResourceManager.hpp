@@ -1,15 +1,14 @@
 #ifndef LPG_RESMGR_H
 #define LPG_RESMGR_H
 
-#include "../a5xx/Resource.hpp"
-#include "../a5xx/Config.hpp"
+#include <axxegro/resources/Resource.hpp>
+#include <axxegro/resources/Config.hpp>
 
 #include <unordered_map>
 #include <memory>
 #include <fmt/format.h>
 
-#include "../a5xx/ResourceFactory.hpp"
-#include "IntegerMap.hpp"
+#include <lpg/util/IntegerMap.hpp>
 
 namespace lpg {
 	class ResourceManager {

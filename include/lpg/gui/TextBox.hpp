@@ -1,8 +1,8 @@
 #ifndef LPG_GUI_TEXTBOX_H
 #define LPG_GUI_TEXTBOX_H
 
-#include "Window.hpp"
-#include "Text.hpp"
+#include <lpg/gui/Window.hpp>
+#include <lpg/gui/Text.hpp>
 
 namespace gui {
 	class TextBox: public Window {

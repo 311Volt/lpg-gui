@@ -1,8 +1,9 @@
 #ifndef LPG_GUI_IMAGE_H
 #define LPG_GUI_IMAGE_H
 
-#include "Window.hpp"
-#include "../a5xx/Bitmap.hpp"
+#include <lpg/gui/Window.hpp>
+
+#include <axxegro/resources/Bitmap.hpp>
 
 namespace gui {
 	class Image: public Window {

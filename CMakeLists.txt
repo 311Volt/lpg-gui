@@ -15,6 +15,7 @@ endif()
 
 include_directories("include")
 include_directories("deps/include")
+include_directories("axxegro/include")
 
 file(GLOB_RECURSE lpg_gui_sources "src/*.cpp")
 

@@ -51,9 +51,9 @@ if(WIN32)
 endif()
 
 function(axxegro_add_example name)
-    add_executable(${name} "src/${name}.cpp")
-    add_dependencies(lpg_gui_examples ${name})
-    target_link_libraries(${name} LINK_PUBLIC ${LPG_GUI_EXAMPLE_LIBS})
+    add_executable("lpg_gui_ex_${name}" "src/${name}.cpp")
+    add_dependencies("lpg_gui_ex_${name}" lpg_gui_examples)
+    target_link_libraries("lpg_gui_ex_${name}" LINK_PUBLIC ${LPG_GUI_EXAMPLE_LIBS})
 endfunction()
 
 

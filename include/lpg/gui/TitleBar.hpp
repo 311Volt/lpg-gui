@@ -1,11 +1,11 @@
 #ifndef LPG_GUI_TITLEBAR_H
 #define LPG_GUI_TITLEBAR_H
 
-#include "Window.hpp"
-#include "Button.hpp"
+#include <lpg/gui/Window.hpp>
+#include <lpg/gui/Button.hpp>
+#include <lpg/gui/Text.hpp>
 
-#include "../a5xx/Font.hpp"
-#include "Text.hpp"
+#include <axxegro/resources/Font.hpp>
 
 namespace gui {
 	class TitleBar : public Window {

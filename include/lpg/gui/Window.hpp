@@ -13,11 +13,11 @@
 #include <unordered_set>
 #include <type_traits>
 
-#include <lpg/a5xx/Bitmap.hpp>
-#include <lpg/a5xx/Font.hpp>
+#include <axxegro/resources/Bitmap.hpp>
+#include <axxegro/resources/Font.hpp>
+#include <axxegro/math/math.hpp>
 
 #include <lpg/gui/Mouse.hpp>
-#include <lpg/gui/Math.hpp>
 
 #include <lpg/util/ResourceManager.hpp>
 #include <lpg/util/IntegerMap.hpp>
