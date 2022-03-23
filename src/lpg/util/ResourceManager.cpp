@@ -1,80 +1,76 @@
-
 #include <lpg/util/ResourceManager.hpp>
 
-#include <lpg/a5xx/Bitmap.hpp>
-#include <lpg/a5xx/Font.hpp>
-#include <lpg/a5xx/Sample.hpp>
-#include <lpg/util/VectorImage.hpp>
+#include <fmt/format.h>
 
-
-lpg::ResourceManager::ResourceManager()
+void lpg::ResourceManager::loadFromConfig(const al::Config& cfg)
 {
-	releaseTime = 25.0;
+	for(const auto& sectionName: cfg.sections()) {
+		for(const auto& key: cfg.keys()) {
+			const auto& value = cfg.getValue(sectionName, key);
+			loadResource(sectionName, key, value);
+		}
+	}
 }
 
-lpg::ResourceManager::~ResourceManager()
+void lpg::ResourceManager::registerLoader(const std::string& name, lpg::ResourceManager::ResourceLoader loader)
 {
-
+	loaders[name] = loader;
 }
 
-bool lpg::ResourceManager::loadFromConfig(const std::string& path)
+lpg::ResourceManager::ResourceID lpg::ResourceManager::loadResource(const std::string& type, const std::string& name, const std::string& args)
 {
-	al::Config cfg(path);
-
-	for(auto& key: cfg.getAllSectionKeys("Bitmap")) {
-		nameMap[key] = idMap.emplace(std::make_unique<al::Bitmap>(cfg.get("Bitmap", key).c_str()));
+	if(loaders.count(name) == 0 || !loaders[name]) {
+		throw ResourceLoaderNotRegistered(fmt::format(
+			"cannot load \"{}\" as \"{}\": loader for {} not registered",
+			args, name, type
+		));
 	}
-	for(auto& key: cfg.getAllSectionKeys("VectorImage")) {
-		nameMap[key] = idMap.emplace(std::make_unique<lpg::VectorImage>(cfg.get("VectorImage", key).c_str()));
+	if(auto loader = loaders[name]) {
+		resources.insert(std::shared_ptr<al::IResourceHandle>(loader(args)));
 	}
-	for(auto& key: cfg.getAllSectionKeys("Font")) {
-		nameMap[key] = idMap.emplace(std::make_unique<al::Font>(cfg.get("Font", key).c_str()));
-	}
-	for(auto& key: cfg.getAllSectionKeys("Sample")) {
-		nameMap[key] = idMap.emplace(std::make_unique<al::Sample>(cfg.get("Sample", key).c_str()));
-	}
-
-	//TODO wtf is this
-	return true;
 }
 
-uint32_t lpg::ResourceManager::give(std::unique_ptr<al::Resource> res, const std::string& name)
+lpg::ResourceManager::ResourceID lpg::ResourceManager::getIdOf(const std::string& resourceName)
 {
-	uint32_t id = idMap.emplace(std::move(res));
-	nameMap[name] = id;
-	return id;
+	try {
+		return nameMap.at(resourceName);
+	} catch(std::out_of_range& e) {
+		throw ResourceNotFound(fmt::format(
+			"cannot get id of \"{}\": no such resource (std::bad_alloc: {})",
+			resourceName,
+			e.what()	
+		));
+	}
+}
+
+std::shared_ptr<al::IResourceHandle> lpg::ResourceManager::getHandle(lpg::ResourceManager::ResourceID id)
+{
+	try {
+		resources.at(id)->load();
+		return resources.at(id);
+	} catch(std::out_of_range& e) {
+		throw ResourceNotFound(fmt::format(
+			"resource with id={} not found",
+			id
+		));
+	}
+}
+
+std::shared_ptr<al::IResourceHandle> lpg::ResourceManager::getHandle(const std::string& name)
+{
+	return getHandle(getIdOf(name));
 }
 
 void lpg::ResourceManager::releaseUnusedResources()
 {
-	for(uint32_t i=0; i<idMap.size(); i++) {
-		if(!idMap.contains(i)) {
+	for(uint32_t i=0; i<resources.size(); i++) {
+		if(!resources.contains(i)) {
 			continue;
 		}
-		auto& resPtr = idMap[i];
-		if(resPtr->timeSinceLastUse() > releaseTime) {
-			resPtr->unload();
+		auto& r = resources[i];
+
+		if(r->timeSinceLastUse() > defaultReleaseTime) {
+			r->unload();
 		}
 	}
-}
-
-void lpg::ResourceManager::clear()
-{
-	nameMap.clear();
-	idMap.clear();
-}
-
-al::Resource* lpg::ResourceManager::getPtr(const std::string& name)
-{
-	al::Resource* ret = nullptr;
-	try {
-		ret = idMap.at(nameMap.at(name)).get();
-		ret->get();
-	} catch(std::out_of_range& e) {
-		throw std::out_of_range(fmt::format(
-			"ResMgr: cannot find resource \"{}\"",
-			name
-		));
-	}
-	return ret;
 }

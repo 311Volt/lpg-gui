@@ -1,59 +1,54 @@
-#ifndef LPG_RESMGR_H
-#define LPG_RESMGR_H
+#ifndef INCLUDE_LPG_UTIL_RESOURCEMANAGER
+#define INCLUDE_LPG_UTIL_RESOURCEMANAGER
 
-#include <axxegro/resources/Resource.hpp>
-#include <axxegro/resources/Config.hpp>
-
+#include <stdexcept>
 #include <unordered_map>
-#include <memory>
-#include <fmt/format.h>
+#include <functional>
+#include <string>
 
+#include <axxegro/axxegro.hpp>
 #include <lpg/util/IntegerMap.hpp>
 
 namespace lpg {
+
+	class ResourceNotFound: public std::runtime_error {using std::runtime_error::runtime_error;};
+	class ResourceLoaderNotRegistered: public std::runtime_error {using std::runtime_error::runtime_error;};
+
 	class ResourceManager {
 	public:
-		ResourceManager();
-		~ResourceManager();
+		using ResourceLoader = std::function<al::IResourceHandle*(const std::string&)>;
+		using ResourceID = uint32_t;
 
-		bool load(const std::string& path);
-		bool loadFromConfig(const std::string& path);
+		void loadFromConfig(const al::Config& cfg);
+		void registerLoader(const std::string& name, ResourceLoader loader);
+		ResourceID loadResource(const std::string& type, const std::string& name, const std::string& args);
 
-		uint32_t give(std::unique_ptr<al::Resource> res, const std::string& name);
+		ResourceID getIdOf(const std::string& resourceName);
 
-		void releaseUnusedResources();
+		std::shared_ptr<al::IResourceHandle> getHandle(ResourceID id);
+		std::shared_ptr<al::IResourceHandle> getHandle(const std::string& name);
 
-
-		template<class T>
-		T* get(const std::string& name)
+		template<typename T>
+		std::shared_ptr<T> get(ResourceID id)
 		{
-			T* ret = dynamic_cast<T*>(getPtr(name));
-			if(!ret) {
-				throw std::runtime_error(fmt::format(
-					"{}: resource type mismatch",
-					name
-				));
+			static_assert(std::is_base_of<al::ResourceHandle<T>, T>::value);
+			using THandle = al::ResourceHandle<T>;
+			auto handle = getHandle(id);
+			if(std::shared_ptr<THandle> tHandle = std::dynamic_pointer_cast<THandle>(handle)) {
+				return tHandle->ptr();
 			}
-			return ret;
 		}
 
-		/* hack alert: for global objects, this must be called at the end of main()
-		 * before Allegro5 starts deinitializing everything, otherwise
-		 * the dtors end up calling al_destroy_X when it is no longer valid
-		 * resulting in a segfault
-		 *
-		 * TODO: don't use global ResourceManager objects? */
-		void clear();
-
-		/* TODO make this shit not public */
-		IntegerMap<uint32_t, std::unique_ptr<al::Resource>> idMap;
-		std::unordered_map<std::string, uint32_t> nameMap;
+		void releaseUnusedResources();
 	private:
-		double releaseTime;
+		size_t noUnloadThreshold;
 
-		al::Resource* getPtr(const std::string& name);
+		double defaultReleaseTime;
+
+		std::unordered_map<std::string, uint32_t> nameMap;
+		std::unordered_map<std::string, ResourceLoader> loaders;
+		lpg::IntegerMap<uint32_t, std::shared_ptr<al::IResourceHandle>> resources;
 	};
-};
+}
 
-
-#endif // LPG_RESMGR_H
+#endif /* INCLUDE_LPG_UTIL_RESOURCEMANAGER */
