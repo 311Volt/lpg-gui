@@ -19,6 +19,8 @@ namespace lpg {
 		using ResourceLoader = std::function<al::IResourceHandle*(const std::string&)>;
 		using ResourceID = uint32_t;
 
+		void registerDefaultLoaders();
+
 		void loadFromConfig(const al::Config& cfg);
 		void registerLoader(const std::string& name, ResourceLoader loader);
 		ResourceID loadResource(const std::string& type, const std::string& name, const std::string& args);

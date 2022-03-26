@@ -2,6 +2,11 @@
 
 #include <fmt/format.h>
 
+#include <axxegro/resources/Bitmap.hpp>
+#include <axxegro/resources/Font.hpp>
+
+#include <cctype>
+
 void lpg::ResourceManager::loadFromConfig(const al::Config& cfg)
 {
 	for(const auto& sectionName: cfg.sections()) {
@@ -74,3 +79,17 @@ void lpg::ResourceManager::releaseUnusedResources()
 		}
 	}
 }
+
+void lpg::ResourceManager::registerDefaultLoaders()
+{
+	registerLoader("Bitmap", [](const std::string& args){
+		return static_cast<al::IResourceHandle*>(
+			new al::BitmapHandleImgFile(args)
+		);
+	});
+
+	registerLoader("Font", [](const std::string& args){
+		return static_cast<al::IResourceHandle*>(
+			new al::FontHandleFile(args, 10)
+		);
+	});
