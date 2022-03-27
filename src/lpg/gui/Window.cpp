@@ -1,11 +1,11 @@
 #include <lpg/gui/Window.hpp>
 
 #include <algorithm>
-#include <lpg/a5xx/EventQueue.hpp>
-#include <lpg/a5xx/RAII.hpp>
-#include <lpg/a5xx/Log.hpp>
 #include <allegro5/allegro_primitives.h>
 #include <fmt/format.h>
+
+#include <axxegro/event/EventQueue.hpp>
+#include <lpg/util/Log.hpp>
 
 #include <lpg/util/VectorImage.hpp>
 
