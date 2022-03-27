@@ -1,5 +1,4 @@
 #include <lpg/gui/Image.hpp>
-#include <lpg/util/VectorImage.hpp>
 
 #include <cmath>
 
@@ -7,16 +6,15 @@ gui::Image::Image(const std::string& resName, float x, float y)
 	: Window(0, 0, x, y)
 {
         setTo(resName);
-        visible = true;
 }
 
 void gui::Image::setTo(const std::string& resName)
 {
 	this->resName = resName;
-	bmp = RM.get<al::Bitmap>(resName);
+	rID = RM.getIdOf(resName);
 
-	Point imgSize(al_get_bitmap_width(bmp->ptr()), al_get_bitmap_height(bmp->ptr()));
-	resize(ToUnits(imgSize));
+	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
+	resize(ToUnits({bmp->getWidth(), bmp->getHeight()}));
 }
 
 void gui::Image::render()
@@ -24,16 +22,7 @@ void gui::Image::render()
 	if(!visible)
 		return;
 
-	Point imgSize(al_get_bitmap_width(bmp->ptr()), al_get_bitmap_height(bmp->ptr()));
-	Point scrSize = getScreenSize();
-	scrSize.x = std::floor(scrSize.x);
-	scrSize.y = std::floor(scrSize.y);
-	al_draw_scaled_bitmap(bmp->ptr(), 0, 0, imgSize.x, imgSize.y, 0, 0, scrSize.x, scrSize.y, 0);
+	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
+	bmp->drawScaled(bmp->getRect(), getScreenRectangle());
 }
 
-void gui::Image::onRescale()
-{
-	if(auto* vImg = dynamic_cast<lpg::VectorImage*>(bmp)) {
-		vImg->rescale(GetEnvScale());
-	}
-}

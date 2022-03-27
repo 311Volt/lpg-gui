@@ -1,4 +1,5 @@
 #include <lpg/resmgr/ResourceManager.hpp>
+#include <lpg/resmgr/DefaultLoaders.hpp>
 
 #include <lpg/util/StrManip.hpp>
 
@@ -7,9 +8,10 @@
 #include <axxegro/resources/Bitmap.hpp>
 #include <axxegro/resources/Font.hpp>
 
+#include <lpg/resmgr/SVGLoader.hpp>
+
 #include <cctype>
 
-#include <lpg/resmgr/DefaultLoaders.hpp>
 
 void lpg::ResourceManager::loadFromConfig(const al::Config& cfg)
 {
@@ -34,10 +36,12 @@ lpg::ResourceManager::ResourceID lpg::ResourceManager::addResource(const std::st
 	}
 	auto loader = loaders[name];
 
-	resources.insert(std::unique_ptr<IManagedResource>(loader(args)));
+	resources.emplace(std::unique_ptr<IManagedResource>(loader(args)));
 	auto id = resources.getLowestFreeKey();
 	nameMap[name] = id;
 	idMap[id] = name;
+
+	return id;
 }
 
 lpg::ResourceManager::ResourceID lpg::ResourceManager::getIdOf(const std::string& resourceName)
@@ -52,6 +56,20 @@ lpg::ResourceManager::ResourceID lpg::ResourceManager::getIdOf(const std::string
 	}
 }
 
+
+std::string lpg::ResourceManager::getNameOf(lpg::ResourceManager::ResourceID id)
+{
+	try {
+		return idMap.at(id);
+	} catch(std::out_of_range& e) {
+		throw ResourceNotFound(fmt::format(
+			"resource with id={} not found",
+			id
+		));
+	}
+}
+
+
 void lpg::ResourceManager::checkUnique(lpg::ResourceManager::ResourceID id)
 {
 	auto& res = resources[id];
@@ -64,6 +82,8 @@ void lpg::ResourceManager::checkUnique(lpg::ResourceManager::ResourceID id)
 		));
 	}
 }
+
+
 
 void lpg::ResourceManager::releaseUnusedResources()
 {
@@ -92,7 +112,7 @@ void lpg::ResourceManager::releaseAllResources()
 }
 
 
-void lpg::ResourceManager::throwMismatch(std::type_info expected, std::type_info actual, lpg::ResourceManager::ResourceID id)
+void lpg::ResourceManager::throwMismatch(const std::type_info& expected, const std::type_info& actual, lpg::ResourceManager::ResourceID id)
 {
 	throw ResourceTypeMismatch(fmt::format(
 		"resource type mismatch: get<{}> called on \"{}\" (id={}), which holds a resource of type {}",
@@ -103,10 +123,10 @@ void lpg::ResourceManager::throwMismatch(std::type_info expected, std::type_info
 	));
 }
 
-IManagedResource* getHandle(ResourceID id)
+lpg::IManagedResource* lpg::ResourceManager::getHandle(lpg::ResourceManager::ResourceID id)
 {
 	try {
-		return resources.at(id);
+		return (lpg::IManagedResource*)resources.at(id).get();
 	} catch(std::out_of_range& e) {
 		throw ResourceNotFound(fmt::format(
 			"resource with id={} not found",
@@ -115,12 +135,16 @@ IManagedResource* getHandle(ResourceID id)
 	}
 }
 
-IManagedResource* DefaultBitmapLoader(const std::string& args)
+lpg::IManagedResource* DefaultBitmapLoader(const std::string& args)
 {
-	return static_cast<IManagedResource*>(new lpg::ManagedResource<al::Bitmap>(lpg::ImageFileLoader(args)));
+	return dynamic_cast<lpg::IManagedResource*>(
+		new lpg::ManagedResource<al::Bitmap>(
+			new lpg::ImageFileLoader(args)
+		)
+	);
 }
 
-IManagedResource* DefaultFontLoader(const std::string& args)
+lpg::IManagedResource* DefaultFontLoader(const std::string& args)
 {
 	auto vArgs = lpg::str::Split(args, "|");
 	for(auto& s: vArgs)
@@ -131,14 +155,41 @@ IManagedResource* DefaultFontLoader(const std::string& args)
 	if(vArgs.size() > 1) {
 		size = std::stod(vArgs.at(1));
 	}
-	return static_cast<IManagedResource*>(new lpg::ManagedResource<al::Font>(lpg::FontFileLoader(filename, size)));
+	return dynamic_cast<lpg::IManagedResource*>(
+		new lpg::ManagedResource<al::Font>(
+			new lpg::FontFileLoader(filename, size)
+		)
+	);
 }
 
-
+lpg::IManagedResource* DefaultSVGLoader(const std::string& args)
+{
+	return dynamic_cast<lpg::IManagedResource*>(
+		new lpg::ManagedResource<al::Bitmap>(
+			new lpg::SVGLoader(args)
+		)
+	);
+}
 
 void lpg::ResourceManager::registerDefaultLoaders()
 {
 	registerLoader("Bitmap", DefaultBitmapLoader);
-	registerLoader("Font", DefaultFont);
-	
+	registerLoader("Font", DefaultFontLoader);
+	registerLoader("VectorImage", DefaultSVGLoader);
+}
+
+
+void lpg::ResourceManager::setScale(al::Vec2 scale)
+{
+	for(unsigned i=0; i<resources.size(); i++) {
+		if(!resources.contains(i)) {
+			continue;
+		}
+
+		IManagedResource* mr = getHandle(i);
+		if(ScaleAwareLoader* l = dynamic_cast<ScaleAwareLoader*>(mr->getLoader())) {
+			l->setScale(scale);
+		}
+	}
+	releaseAllResources();
 }

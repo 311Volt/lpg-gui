@@ -17,7 +17,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TextBox::onMouseDown);
 	
 	setEdgeType(EdgeType::BEVELED_INWARD);
-	setBgColor(al_map_rgb(255,255,255));
+	setBgColor(al::Color::RGB(255,255,255));
 }
 
 

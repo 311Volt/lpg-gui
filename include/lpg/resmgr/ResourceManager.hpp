@@ -31,30 +31,34 @@ namespace lpg {
 		ResourceID addResource(const std::string& type, const std::string& name, const std::string& args);
 
 		ResourceID getIdOf(const std::string& resourceName);
+		std::string getNameOf(ResourceID id);
 
 		template<typename T>
 		std::shared_ptr<T> get(ResourceID id)
 		{
 			static_assert(std::is_base_of<al::Resource, T>::value);
 			IManagedResource* mr = getHandle(id);
-			if(ManagedResource<T> mrt = std::dynamic_cast<ManagedResource<T>>(handle)) {
+			if(ManagedResource<T>* mrt = dynamic_cast<ManagedResource<T>*>(mr)) {
 				return mrt->get();
 			} else {
 				throwMismatch(typeid(T), mr->resourceType(), id);
 			}
+			return {nullptr};
 		}
 
 		template<typename T>
 		std::shared_ptr<T> get(const std::string& name)
 		{
-			return get<T>(getIdOf(name))
+			return get<T>(getIdOf(name));
 		}
+
+		void setScale(al::Vec2 scale);
 
 		void releaseUnusedResources();
 		void releaseAllResources();
 	private:
 		void checkUnique(ResourceID id);
-		void throwMismatch(std::type_info expected, std::type_info actual, ResourceID id);
+		void throwMismatch(const std::type_info& expected, const std::type_info& actual, ResourceID id);
 		IManagedResource* getHandle(ResourceID id);
 
 		size_t noUnloadThreshold;

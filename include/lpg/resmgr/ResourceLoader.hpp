@@ -11,10 +11,16 @@ namespace lpg {
 		virtual void setScale(al::Vec2 scale) = 0;
 	};
 
-	template<typename T>
-	class ResourceLoader {
+	class IResourceLoader {
 	public:
-		virtual void T* createObject() = 0;
+		virtual void dummy() = 0;
+	};
+
+	template<typename T>
+	class ResourceLoader: public IResourceLoader {
+	public:
+		virtual void dummy() override {}
+		virtual T* createObject() = 0;
 	};
 
 	

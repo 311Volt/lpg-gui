@@ -1,5 +1,5 @@
 #include <lpg/gui/Slider.hpp>
-#include <lpg/a5xx/Log.hpp>
+#include <lpg/util/Log.hpp>
 
 #include <algorithm>
 #include <utility>
@@ -24,7 +24,7 @@ gui::Slider::Slider(int x, int y, int w, int h)
 	maxValue(65535),
 	handleDragOffset(0)
 {
-	setBgColor(al_map_rgb(128,128,128));
+	setBgColor(al::Color::RGB(128,128,128));
 	setEdgeType(EdgeType::BEVELED_INWARD);
 	setRawValue(0);
 
@@ -107,7 +107,7 @@ uint16_t gui::Slider::getRawValue()
 void gui::Slider::setRawValue(uint16_t v)
 {
 	if(v > maxValue) {
-		al::Log(2, fmt::format(
+		lpg::Log(2, fmt::format(
 			"slider #{}: setRawValue: given value {} is larger than maxValue {}, ignoring",
 			getID(), v, maxValue
 		));

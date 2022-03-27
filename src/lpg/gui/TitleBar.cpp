@@ -4,11 +4,11 @@
 gui::TitleBar::TitleBar()
 	: Window(48,18,1,1)
 {
-	setBgColor(al_map_rgb(0,0,192));
+	setBgColor(al::Color::RGB(0,0,192));
 	setEdgeType(EdgeType::NONE);
 
 	caption.setAlignment(Alignment::LEFT_CENTER);
-	caption.setTextColor(al_map_rgb(255,255,255));
+	caption.setTextColor(al::Color::RGB(255,255,255));
 	caption.setPos(Point(4,1));
 	addChild(caption);
 

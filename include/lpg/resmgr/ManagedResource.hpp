@@ -16,15 +16,16 @@ namespace lpg {
 		virtual void reload() = 0;
 		virtual double timeSinceLastUse() = 0;
 		virtual unsigned refCount() = 0;
-		virtual std::type_info resourceType() = 0;
+		virtual const std::type_info& resourceType() = 0;
+		virtual IResourceLoader* getLoader() = 0;
 	};
 
 	template<typename T>
-	class ManagedResource {
+	class ManagedResource: public IManagedResource {
 		static_assert(std::is_base_of<al::Resource, T>::value);
 	public:
 		using ResourceType = T;
-		ManagedResource(ResourceLoader<T> loader)
+		ManagedResource(ResourceLoader<T>* loader)
 			: loader(loader),
 			  timeOfLastUse(-1437.0f)
 		{
@@ -34,7 +35,7 @@ namespace lpg {
 
 		virtual void load() override
 		{
-			ptr = std::shared_ptr<T>(loader.createObject());
+			ptr = std::shared_ptr<T>(loader->createObject());
 		}
 		virtual void unload() override 
 		{
@@ -50,9 +51,19 @@ namespace lpg {
 			return al::GetTime() - timeOfLastUse;
 		}
 
-		virtual std::type_info resourceType() override
+		virtual unsigned refCount() override
+		{
+			return ptr.use_count();
+		}
+
+		virtual const std::type_info& resourceType() override
 		{
 			return typeid(T);
+		}
+
+		virtual IResourceLoader* getLoader() override
+		{
+			return loader.get();
 		}
 
 		std::shared_ptr<T> get()
@@ -62,7 +73,7 @@ namespace lpg {
 		}
 	private:
 		double timeOfLastUse;
-		ResourceLoader<T> loader;
+		std::unique_ptr<ResourceLoader<T>> loader;
 		std::shared_ptr<T> ptr;
 	};
 

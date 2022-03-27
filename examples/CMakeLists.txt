@@ -1,6 +1,6 @@
 
 
-#set(CMAKE_FIND_DEBUG_MODE TRUE)
+# set(CMAKE_FIND_DEBUG_MODE TRUE)
 
 find_library(FMTLIB "fmt" ${LPG_GUI_DEPS_LIB})
 

@@ -4,10 +4,9 @@
 #include <allegro5/allegro_primitives.h>
 #include <fmt/format.h>
 
+#include <axxegro/Transform.hpp>
 #include <axxegro/event/EventQueue.hpp>
 #include <lpg/util/Log.hpp>
-
-#include <lpg/util/VectorImage.hpp>
 
 lpg::IntegerMap<uint32_t, gui::Window*> gui::Window::idMap;
 lpg::ResourceManager gui::Window::RM;
@@ -18,8 +17,8 @@ gui::Window::Window(float width, float height, float x, float y)
 	resize(width, height);
 	setPos(Point(x, y));
 
-	textColor = al_map_rgb(0,0,0);
-	bgColor = al_map_rgb(192,192,192);
+	textColor = al::Color::RGB(0,0,0);
+	bgColor = al::Color::RGB(192,192,192);
 	edgeType = EdgeType::BEVELED;
 	alignment = Alignment::LEFT_TOP;
 
@@ -71,7 +70,7 @@ void gui::Window::render()
 	w = int(w);
 	h = int(h);
 
-	al_draw_filled_rectangle(0, 0, w, h, bgColor);
+	al_draw_filled_rectangle(0, 0, w, h, bgColor.get());
 
 	if(edgeType == EdgeType::REGULAR) {
 		al_draw_rectangle(0, 0, w, h, al_map_rgb(255,255,255), 1.0);
@@ -115,13 +114,14 @@ void gui::Window::draw()
 	al_translate_transform(&tr, int(rp.x), int(rp.y));
 	al::ScopedTransform st(&tr);
 
+
 	if(!isPrerenderingEnabled) {
 		render();
 	} else {
 
 		if(needsRedraw) {
-			al::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()).c_str());
-			al::ScopedTargetBitmap tb(winFrameBuffer->ptr());
+			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->alPtr(), getID(), getTitle()).c_str());
+			al::ScopedTargetBitmap tb(winFrameBuffer->alPtr());
 			al_clear_to_color(al_map_rgba(0,0,0,0));
 			//al_draw_bitmap(al_get_backbuffer(al_get_current_display()), -rp.x, -rp.y, 0);
 			render();
@@ -133,7 +133,7 @@ void gui::Window::draw()
 			al_get_bitmap_height(winFrameBuffer->ptr()),
 			al_premul_rgba(0,255,0,70)); */
 
-		al_draw_bitmap(winFrameBuffer->ptr(), 0.0, 0.0, 0);
+		al_draw_bitmap(winFrameBuffer->alPtr(), 0.0, 0.0, 0);
 	}
 }
 
@@ -358,7 +358,7 @@ void gui::Window::resize(Point newDims)
 	bool changed = dims!=newDims;
 	dims = newDims;
 
-	if(winFrameBuffer && winFrameBuffer->ptr() && changed) {
+	if(winFrameBuffer && winFrameBuffer->alPtr() && changed) {
 		//TODO speed this up?
 		Point newss = getScreenSize();
 		winFrameBuffer = std::make_unique<al::Bitmap>(newss.x, newss.y);
@@ -409,12 +409,12 @@ void gui::Window::setAlignment(Alignment alignment)
 }
 
 
-void gui::Window::setTextColor(ALLEGRO_COLOR color)
+void gui::Window::setTextColor(al::Color color)
 {
 	textColor = color;
 }
 
-void gui::Window::setBgColor(ALLEGRO_COLOR color)
+void gui::Window::setBgColor(al::Color color)
 {
 	bgColor = color;
 }
@@ -488,7 +488,7 @@ void gui::Window::acknowledgeChildEventHandlerDeletion(ALLEGRO_EVENT_TYPE type)
 		if(item != pEv.end()) {
 			pEv.erase(item);
 		} else {
-			al::Log(1, fmt::format(
+			lpg::Log(1, fmt::format(
 				"warning: event {} handled by \"{}\" (#{}) not found in propagatedEvents of parent \"{}\" (#{}) (this should never happen)",
 				type,
 				getTitle(),
@@ -534,7 +534,7 @@ float gui::Window::GetEnvScale()
 void gui::Window::SetEnvScale(float envScale)
 {
 	if(envScale <= 0.01f || envScale > 100.0f) {
-		al::Log(2, fmt::format(
+		lpg::Log(2, fmt::format(
 			"new EnvScale ({.2f}) outside of acceptable range (.01-100), keeping it at {.2f}\n",
 			envScale, EnvScale
 		));
@@ -542,17 +542,7 @@ void gui::Window::SetEnvScale(float envScale)
 	}
 	EnvScale = envScale;
 
-	for(uint32_t i=0; i<idMap.size(); i++) {
-		if(RM.idMap.contains(i)) {
-			auto& res = RM.idMap[i];
-			if(auto* r = dynamic_cast<lpg::VectorImage*>(res.get())) {
-				r->rescale(EnvScale);
-			}
-			if(auto* r = dynamic_cast<al::Font*>(res.get())) {
-				r->rescale(EnvScale);
-			}
-		}
-	}
+	RM.setScale({envScale, envScale});
 
 	for(uint32_t i=0; i<idMap.size(); i++) {
 		if(idMap.contains(i)) {

@@ -4,10 +4,12 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <optional>
 
 #include <axxegro/resources/Bitmap.hpp>
 
 #include <lpg/gui/Window.hpp>
+#include <lpg/resmgr/ResourceManager.hpp>
 
 namespace gui {
 
@@ -18,12 +20,12 @@ namespace gui {
 
 		virtual void render() override;
 		void mainLoop();
-		void setWallpaper(std::unique_ptr<al::Bitmap>&& wp);
+		void setWallpaper(const std::string& resName);
 	private:
 		void onResizeEvent(const ALLEGRO_EVENT& ev);
 		void onKeyDown(const ALLEGRO_EVENT& ev);
 
-		std::unique_ptr<al::Bitmap> wallpaper;
+		std::optional<lpg::ResourceManager::ResourceID> rID;
 	};
 }
 

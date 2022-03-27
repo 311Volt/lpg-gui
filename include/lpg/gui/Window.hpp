@@ -19,10 +19,13 @@
 
 #include <lpg/gui/Mouse.hpp>
 
-#include <lpg/util/ResourceManager.hpp>
+#include <lpg/resmgr/ResourceManager.hpp>
 #include <lpg/util/IntegerMap.hpp>
 
 namespace gui {
+
+	using al::Point, al::Vec2, al::Rect;
+
 	class Window {
 	public:
 		Window(float width, float height, float x, float y);
@@ -130,8 +133,8 @@ namespace gui {
 
 		void setPos(Point p);
 
-		void setTextColor(ALLEGRO_COLOR color);
-		void setBgColor(ALLEGRO_COLOR color);
+		void setTextColor(al::Color color);
+		void setBgColor(al::Color color);
 		void setEdgeType(EdgeType type);
 
 		void enablePrerendering();
@@ -167,8 +170,8 @@ namespace gui {
 		Window* parent; //NULL for root
 
 		//appearance
-		ALLEGRO_COLOR textColor;
-		ALLEGRO_COLOR bgColor;
+		al::Color textColor;
+		al::Color bgColor;
 		EdgeType edgeType;
 
 		//rendering settings and effects

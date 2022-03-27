@@ -7,6 +7,8 @@
 #include <axxegro/resources/Font.hpp>
 #include <axxegro/resources/Bitmap.hpp>
 
+#include <lpg/resmgr/ResourceManager.hpp>
+
 namespace gui {
 	class Text : public Window {
 	public:
@@ -16,11 +18,13 @@ namespace gui {
 
 		static Point GetBitmapSize();
 
+		void setFont(const std::string& resName);
+
 		virtual void onRescale() override;
 		virtual void onTitleChange() override;
 		virtual void render() override;
 	private:
-		std::string fontName;
+		lpg::ResourceManager::ResourceID rID;
 		std::string text;
 	};
 }

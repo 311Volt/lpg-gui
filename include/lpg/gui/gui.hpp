@@ -3,7 +3,6 @@
 #include <lpg/gui/Checkbox.hpp>
 #include <lpg/gui/Desktop.hpp>
 #include <lpg/gui/DropdownList.hpp>
-#include <lpg/gui/Environment.hpp>
 #include <lpg/gui/Image.hpp>
 #include <lpg/gui/Mouse.hpp>
 #include <lpg/gui/Radio.hpp>

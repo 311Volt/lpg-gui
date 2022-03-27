@@ -18,12 +18,12 @@ namespace lpg {
 	class FontFileLoader: public ResourceLoader<al::Font>, public ScaleAwareLoader {
 		std::string filename;
 		int size;
-		Vec2 scale;
+		al::Vec2 scale;
 	public:
 		FontFileLoader(const std::string& filename, int size);
 		virtual al::Font* createObject() override;
-		virtual void setScale(al::Vec2 scale);
-	}
+		virtual void setScale(al::Vec2 scale) override;
+	};
 }
 
 #endif /* INCLUDE_LPG_RESMGR_DEFAULTLOADERS */

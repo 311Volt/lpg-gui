@@ -1,11 +1,8 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_native_dialog.h>
 
-#include <lpg/a5xx/a5xx.hpp>
 #include <lpg/gui/gui.hpp>
-
-#include <lpg/util/VectorImage.hpp>
-#include <lpg/util/IntegerMap.hpp>
+#include <lpg/util/Log.hpp>
 
 #include <iostream>
 #include <cmath>
@@ -15,11 +12,11 @@
 int main1()
 {
 	al::FullInit();
-	al::Log.SetVerbosity(2);
+	lpg::Log.SetVerbosity(2);
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
 	al_create_display(1024, 768);
 
-	gui::Window::RM.loadFromConfig("gui/default.ini");
+	gui::Window::RM.loadFromConfig(al::Config("gui/default.ini"));
 
 	gui::Desktop desk;
 	gui::Window win(200, 350, 20, 20);
@@ -55,7 +52,7 @@ int main1()
 	gui::TextBox tb(10, 285, 170, 20);
 
 	desk.addChild(win);
-	desk.setWallpaper(std::make_unique<al::Bitmap>("gui/wallpaper.jpg"));
+	desk.setWallpaper("Wallpaper");
 
 	win.addChild(chk);
 	win.addChild(scaleInfo);
@@ -68,7 +65,7 @@ int main1()
 
 	desk.mainLoop();
 
-	gui::Window::RM.clear();
+	gui::Window::RM.releaseAllResources();
 
 	return 0;
 }

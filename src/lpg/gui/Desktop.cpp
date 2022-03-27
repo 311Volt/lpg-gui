@@ -1,6 +1,6 @@
 #include <lpg/gui/Desktop.hpp>
 
-#include <lpg/a5xx/EventQueue.hpp>
+#include <axxegro/event/EventQueue.hpp>
 
 gui::Desktop::Desktop()
 	: Window(
@@ -17,14 +17,16 @@ gui::Desktop::~Desktop()
 
 }
 
+void gui::Desktop::setWallpaper(const std::string& resName)
+{
+	rID = {RM.getIdOf(resName)};
+}
+
 void gui::Desktop::render()
 {
-	if(wallpaper.get() && wallpaper->getStatus() != al::Resource::Status::ERROR) {
-		int w = al_get_bitmap_width(wallpaper->ptr());
-		int h = al_get_bitmap_height(wallpaper->ptr());
-		int dw = al_get_display_width(al_get_current_display());
-		int dh = al_get_display_height(al_get_current_display());
-		al_draw_scaled_bitmap(wallpaper->ptr(), 0, 0, w, h, 0, 0, dw, dh, 0);
+	if(rID.has_value()) {
+		std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID.value());
+		bmp->drawScaled(bmp->getRect(), getScreenRectangle());
 	}
 
 	drawChildren();
@@ -69,9 +71,4 @@ void gui::Desktop::onKeyDown(const ALLEGRO_EVENT& ev)
 {
 	if(ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
 		exitFlag = true;
-}
-
-void gui::Desktop::setWallpaper(std::unique_ptr<al::Bitmap>&& wp)
-{
-	this->wallpaper = std::move(wp);
 }

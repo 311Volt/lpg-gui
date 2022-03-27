@@ -1,7 +1,7 @@
 #include <lpg/gui/Button.hpp>
 #include <lpg/gui/Mouse.hpp>
 
-#include <lpg/a5xx/Log.hpp>
+#include <lpg/util/Log.hpp>
 
 gui::Button::Button(float w, float h, float x, float y, CallbackT callback)
 	: Window(w, h, x, y),

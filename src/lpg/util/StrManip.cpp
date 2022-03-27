@@ -14,6 +14,7 @@ std::string lpg::str::ToLower(const std::string& str)
 			return std::tolower(c);
 		}
 	);
+	return ret;
 }
 
 std::string lpg::str::ToUpper(const std::string& str)
@@ -26,6 +27,7 @@ std::string lpg::str::ToUpper(const std::string& str)
 			return std::toupper(c);
 		}
 	);
+	return ret;
 }
 std::vector<std::string> lpg::str::Split(const std::string& str, const std::string& sep)
 {

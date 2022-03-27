@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fmt/format.h>
 
-bool gui::IsMouseInRect(const ALLEGRO_EVENT& ev, const Rect& r)
+bool gui::IsMouseInRect(const ALLEGRO_EVENT& ev, const al::Rect& r)
 {
 	return (
 		ev.mouse.x >= r.a.x &&
@@ -29,12 +29,12 @@ bool gui::IsReleaseEvent(const ALLEGRO_EVENT& ev, MouseBtn btn)
 	);
 }
 
-bool gui::IsClickEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const Rect& r)
+bool gui::IsClickEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const al::Rect& r)
 {
 	return IsClickEvent(ev, btn) && IsMouseInRect(ev, r);
 }
 
-bool gui::IsReleaseEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const Rect& r)
+bool gui::IsReleaseEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const al::Rect& r)
 {
 	return IsReleaseEvent(ev, btn) && IsMouseInRect(ev, r);
 }
