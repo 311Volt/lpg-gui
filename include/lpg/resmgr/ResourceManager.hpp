@@ -40,10 +40,9 @@ namespace lpg {
 			IManagedResource* mr = getHandle(id);
 			if(ManagedResource<T>* mrt = dynamic_cast<ManagedResource<T>*>(mr)) {
 				return mrt->get();
-			} else {
-				throwMismatch(typeid(T), mr->resourceType(), id);
 			}
-			return {nullptr};
+			throwMismatch(typeid(T), mr->resourceType(), id);
+			return {nullptr}; //to suppress compiler warnings; line above always throws anyway
 		}
 
 		template<typename T>

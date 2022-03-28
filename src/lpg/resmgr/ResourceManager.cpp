@@ -10,15 +10,20 @@
 
 #include <lpg/resmgr/SVGLoader.hpp>
 
+#include <lpg/util/Log.hpp>
+
 #include <cctype>
 
 
 void lpg::ResourceManager::loadFromConfig(const al::Config& cfg)
 {
+	lpg::Log(3, "initializing ResourceManager from config");
 	for(const auto& sectionName: cfg.sections()) {
-		for(const auto& key: cfg.keys()) {
+		lpg::Log(3, fmt::format("section [{}]", sectionName));
+		for(const auto& key: cfg.keys(sectionName)) {
 			const auto& value = cfg.getValue(sectionName, key);
-			addResource(sectionName, key, value);
+			auto rID = addResource(sectionName, key, value);
+			lpg::Log(3, fmt::format("    adding [{}]: {} -> {} [#{}]", sectionName, key, value, rID));
 		}
 	}
 }
@@ -28,16 +33,22 @@ void lpg::ResourceManager::registerLoader(const std::string& typeName, lpg::Reso
 }
 lpg::ResourceManager::ResourceID lpg::ResourceManager::addResource(const std::string& type, const std::string& name, const std::string& args)
 {
-	if(loaders.count(name) == 0 || !loaders[name]) {
+	if(loaders.count(type) == 0) {
 		throw ResourceLoaderNotRegistered(fmt::format(
 			"cannot load \"{}\" as \"{}\": loader for {} not registered",
 			args, name, type
 		));
 	}
-	auto loader = loaders[name];
+	auto loader = loaders[type];
+	if(!loader) {
+		throw ResourceLoaderNotRegistered(fmt::format(
+			"empty loader given for [{}]",
+			type
+		));
+	}
 
-	resources.emplace(std::unique_ptr<IManagedResource>(loader(args)));
-	auto id = resources.getLowestFreeKey();
+	
+	auto id = resources.emplace(std::unique_ptr<IManagedResource>(loader(args)));
 	nameMap[name] = id;
 	idMap[id] = name;
 

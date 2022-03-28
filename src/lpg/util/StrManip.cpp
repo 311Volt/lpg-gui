@@ -34,7 +34,7 @@ std::vector<std::string> lpg::str::Split(const std::string& str, const std::stri
 	std::vector<std::string> ret;
 	std::string::size_type a = 0;
 	while(a < str.length()) {
-		std::string::size_type b = str.find(sep);
+		std::string::size_type b = str.find(sep, a);
 		if(b == std::string::npos) {
 			b = str.length();
 		}

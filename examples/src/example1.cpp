@@ -16,7 +16,10 @@ int main1()
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
 	al_create_display(1024, 768);
 
-	gui::Window::RM.loadFromConfig(al::Config("gui/default.ini"));
+	al::Config resCfg("gui/default.ini");
+	
+	gui::Window::RM.registerDefaultLoaders();
+	gui::Window::RM.loadFromConfig(resCfg);
 
 	gui::Desktop desk;
 	gui::Window win(200, 350, 20, 20);

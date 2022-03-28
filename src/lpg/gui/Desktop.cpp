@@ -2,6 +2,8 @@
 
 #include <axxegro/event/EventQueue.hpp>
 
+#include <fmt/format.h>
+
 gui::Desktop::Desktop()
 	: Window(
 		al_get_display_width(al_get_current_display()),
@@ -24,9 +26,13 @@ void gui::Desktop::setWallpaper(const std::string& resName)
 
 void gui::Desktop::render()
 {
+	al::Vec2 dispSize {
+		al_get_display_width(al_get_current_display()),
+		al_get_display_height(al_get_current_display())
+	};
 	if(rID.has_value()) {
 		std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID.value());
-		bmp->drawScaled(bmp->getRect(), getScreenRectangle());
+		bmp->drawScaled(bmp->getRect(), {{0,0}, dispSize});
 	}
 
 	drawChildren();
@@ -46,7 +52,6 @@ void gui::Desktop::mainLoop()
 			ALLEGRO_EVENT ev = eq.pop();
 			handleEvent(ev);
 		}
-
 		tick();
 
 		al_clear_to_color(al_map_rgb(0,0,0));

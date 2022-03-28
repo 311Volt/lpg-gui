@@ -3,9 +3,10 @@
 #include <cmath>
 
 gui::Image::Image(const std::string& resName, float x, float y)
-	: Window(0, 0, x, y)
+	: Window(0, 0, x, y), visible(true)
 {
         setTo(resName);
+	setTitle("An image");
 }
 
 void gui::Image::setTo(const std::string& resName)
@@ -14,7 +15,7 @@ void gui::Image::setTo(const std::string& resName)
 	rID = RM.getIdOf(resName);
 
 	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
-	resize(ToUnits({bmp->getWidth(), bmp->getHeight()}));
+	resize(ToUnits(bmp->getSize()));
 }
 
 void gui::Image::render()
@@ -23,6 +24,6 @@ void gui::Image::render()
 		return;
 
 	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
-	bmp->drawScaled(bmp->getRect(), getScreenRectangle());
+	bmp->drawScaled(bmp->getRect(), {{0,0}, getScreenSize()});
 }
 

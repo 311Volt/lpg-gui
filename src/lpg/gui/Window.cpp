@@ -114,26 +114,19 @@ void gui::Window::draw()
 	al_translate_transform(&tr, int(rp.x), int(rp.y));
 	al::ScopedTransform st(&tr);
 
-
 	if(!isPrerenderingEnabled) {
 		render();
 	} else {
 
 		if(needsRedraw) {
-			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->alPtr(), getID(), getTitle()).c_str());
+			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->alPtr(), getID(), getTitle()));
 			al::ScopedTargetBitmap tb(winFrameBuffer->alPtr());
 			al_clear_to_color(al_map_rgba(0,0,0,0));
-			//al_draw_bitmap(al_get_backbuffer(al_get_current_display()), -rp.x, -rp.y, 0);
 			render();
 			needsRedraw = false;
 		}
 
-                /* al_draw_filled_rectangle(0, 0,
-			al_get_bitmap_width(winFrameBuffer->ptr()),
-			al_get_bitmap_height(winFrameBuffer->ptr()),
-			al_premul_rgba(0,255,0,70)); */
-
-		al_draw_bitmap(winFrameBuffer->alPtr(), 0.0, 0.0, 0);
+		winFrameBuffer->draw({0, 0});
 	}
 }
 
@@ -201,6 +194,7 @@ void gui::Window::drawChildren()
 	for(unsigned i=0; i<ids.size(); i++) {
 		idMap[ids[i]]->draw();
 	}
+	fmt::print("\n");
 }
 
 

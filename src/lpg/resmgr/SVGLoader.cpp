@@ -36,6 +36,8 @@ al::Bitmap* lpg::SVGLoader::createObject()
 	int targetWidth = scale.x * document->width();
 	int targetHeight = scale.y * document->height();
 
+	fmt::print("creating a {}x{} bitmap from {}\n", targetWidth, targetHeight, filename);
+
 	std::unique_ptr<al::Bitmap> ret = std::make_unique<al::Bitmap>(targetWidth, targetHeight);
 	lunasvg::Bitmap render = document->renderToBitmap(targetWidth, targetHeight);
 	if(!render.valid()) {

@@ -43,17 +43,14 @@ void gui::Text::onRescale()
 
 void gui::Text::onTitleChange()
 {
-	try {
-		std::shared_ptr<al::Font> font = RM.get<al::Font>(rID);
-		
-		Rect td = font->getTextDimensions(title);
-		td.b.x = std::max(td.a.x+1.0f, td.b.x);
-		td.b.y = std::max(td.a.x+1.0f, td.b.y);
-		
-		resize(td.getSize());
-	} catch(std::out_of_range& e) {
-		lpg::Log(1, fmt::format("out_of_range in Text::onTitleChange (does the font \"{}\" exist?)", RM.getNameOf(rID)));
-	}
+	std::shared_ptr<al::Font> font = RM.get<al::Font>(rID);
+	
+	Rect td = font->getTextDimensions(title);
+	Point s = td.getSize();
+	td.b.x = std::max(td.a.x+1.0f, td.b.x);
+	td.b.y = std::max(td.a.y+1.0f, td.b.y);
+	
+	resize(s);
 }
 
 void gui::Text::render()
@@ -62,7 +59,7 @@ void gui::Text::render()
 	if(title.length()) {
 		Rect td = font->getTextDimensions(title);
 		td.b.x = std::max(td.a.x+1.0f, td.b.x);
-		td.b.y = std::max(td.a.x+1.0f, td.b.y);
+		td.b.y = std::max(td.a.y+1.0f, td.b.y);
 
 		font->draw(title, textColor, -td.a);
 	}

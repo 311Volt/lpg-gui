@@ -35,7 +35,9 @@ namespace lpg {
 
 		virtual void load() override
 		{
-			ptr = std::shared_ptr<T>(loader->createObject());
+			if(!ptr) {
+				ptr = std::shared_ptr<T>(loader->createObject());
+			}
 		}
 		virtual void unload() override 
 		{
@@ -69,6 +71,7 @@ namespace lpg {
 		std::shared_ptr<T> get()
 		{
 			timeOfLastUse = al::GetTime();
+			load();
 			return ptr;
 		}
 	private:
