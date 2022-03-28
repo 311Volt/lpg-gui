@@ -45,15 +45,17 @@ gui::Window::Window(float width, float height)
 
 gui::Window::~Window()
 {
-	idMap.erase(id);
-
 	for(auto& evType: propagatedEvents) {
 		deleteEventHandler(evType);
 	}
-
+	
 	if(parent) {
 		parent->children.erase(id);
 	}
+	for(uint32_t childId: children) {
+		idMap[childId]->parent = nullptr;
+	}
+	idMap.erase(id);
 }
 
 void gui::Window::tick()

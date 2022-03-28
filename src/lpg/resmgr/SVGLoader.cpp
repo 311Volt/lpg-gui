@@ -38,7 +38,7 @@ al::Bitmap* lpg::SVGLoader::createObject()
 
 	fmt::print("creating a {}x{} bitmap from {}\n", targetWidth, targetHeight, filename);
 
-	std::unique_ptr<al::Bitmap> ret = std::make_unique<al::Bitmap>(targetWidth, targetHeight);
+
 	lunasvg::Bitmap render = document->renderToBitmap(targetWidth, targetHeight);
 	if(!render.valid()) {
 		throw al::ResourceLoadError(fmt::format(
@@ -48,14 +48,21 @@ al::Bitmap* lpg::SVGLoader::createObject()
 		));
 	}
 	
+	std::unique_ptr<al::Bitmap> ret = std::make_unique<al::Bitmap>(targetWidth, targetHeight);
+	ret->clearToColor(al::Color::RGBA(0,0,0,0));
 	{
 		al::BitmapLockedRegion lr(*ret, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY);
 
 		for(int y=0; y<targetHeight; y++) {
+			uint8_t* xDDD = lr.data();
 			uint32_t* srcLine = (uint32_t*)(render.data() + 4*targetWidth*y);
-			uint32_t* dstLine = (uint32_t*)lr.rowData(y);
+			uint32_t* dstLine = (uint32_t*)(lr.data() + lr.getPitch()*y);
 
-			std::transform(srcLine, srcLine+targetWidth, dstLine, lunaAlphaPremul);
+			for(int x=0; x<targetWidth; x++) {
+				uint32_t tmp = lunaAlphaPremul(srcLine[x]);
+				dstLine[x] = tmp;
+			}
+			//std::transform(srcLine, srcLine+targetWidth, dstLine, lunaAlphaPremul);
 		}
 	}
 

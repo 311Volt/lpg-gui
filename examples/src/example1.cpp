@@ -12,7 +12,7 @@
 int main1()
 {
 	al::FullInit();
-	lpg::Log.SetVerbosity(2);
+	lpg::Log.SetVerbosity(5);
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
 	al_create_display(1024, 768);
 

@@ -5,7 +5,7 @@
 gui::Image::Image(const std::string& resName, float x, float y)
 	: Window(0, 0, x, y), visible(true)
 {
-        setTo(resName);
+	setTo(resName);
 	setTitle("An image");
 }
 
