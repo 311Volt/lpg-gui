@@ -18,6 +18,7 @@ Memory - O(n) in the value of the largest key
 #include <vector>
 #include <queue>
 #include <list>
+#include <iterator>
 #include <type_traits>
 #include <stdexcept>
 #include <cstdint>
@@ -34,6 +35,44 @@ namespace lpg {
 
 		using ListT = std::list<ValueT>;
 	public:
+
+		class iterator {
+		public:
+			using iterator_category = std::forward_iterator_tag;
+			using difference_type = int64_t;
+			using value_type = std::pair<KeyT, ValueT>;
+			using pointer = std::pair<KeyT, ValueT>*;
+			using reference = std::pair<KeyT, ValueT>&;
+
+			iterator(IntegerMap* im, KeyT idx)
+				: im(im), idx(idx) {}
+			
+			value_type operator*() const
+				{return {idx, im->at(idx)};}
+			
+			iterator& operator++()
+			{
+				do {
+					idx++;
+				} while(idx < im->size() && !im->contains(idx));
+				return *this;
+			}
+			
+			iterator operator++(int)
+				{return ++iterator(*this);}
+
+			friend bool operator==(const iterator& a, const iterator& b)
+				{return a.im==b.im && a.idx==b.idx;}
+			
+			friend bool operator!=(const iterator& a, const iterator& b)
+				{return a.im!=b.im || a.idx!=b.idx;}
+			
+			
+		private:
+			IntegerMap* im;
+			KeyT idx;
+		};
+
 		IntegerMap() {}
 		~IntegerMap() {}
 
@@ -119,9 +158,30 @@ namespace lpg {
 			return emplace(getLowestFreeKey(), std::move(value));
 		}
 
+		std::vector<KeyT> keys()
+		{
+			std::vector<KeyT> ret;
+			for(KeyT i=0; i<size(); i++) {
+				if(contains(i)) {
+					ret.push_back(i);
+				}
+			}
+			return ret;
+		}
+
 		KeyT size() const
 		{
 			return pVec.size();
+		}
+
+		iterator begin()
+		{
+			return iterator(this, 0);
+		}
+
+		iterator end()
+		{
+			return iterator(this, size());
 		}
 
 		void shrinkToFit()

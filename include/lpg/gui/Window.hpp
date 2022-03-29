@@ -140,6 +140,8 @@ namespace gui {
 		void enablePrerendering();
 		void disablePrerendering();
 
+		static void printDrawTimeSummary();
+
 		void setTitle(const std::string& title);
 		const std::string& getTitle() const;
 		uint32_t getID() const;
@@ -199,6 +201,8 @@ namespace gui {
 
 		std::unordered_multiset<ALLEGRO_EVENT_TYPE> propagatedEvents;
 		static lpg::IntegerMap<uint32_t, Window*> idMap;
+
+		double drawTime;
 	};
 }
 

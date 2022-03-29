@@ -46,11 +46,11 @@ void gui::Text::onTitleChange()
 	std::shared_ptr<al::Font> font = RM.get<al::Font>(rID);
 	
 	Rect td = font->getTextDimensions(title);
-	Point s = td.getSize();
-	td.b.x = std::max(td.a.x+1.0f, td.b.x);
-	td.b.y = std::max(td.a.y+1.0f, td.b.y);
-	
-	resize(s);
+	td.b += {1.0f, 1.0f};
+	td.b.x = std::max(td.a.x+5.0f, td.b.x);
+	td.b.y = std::max(td.a.y+5.0f, td.b.y);
+
+	resize(ToUnits(td.getSize()));
 }
 
 void gui::Text::render()
@@ -58,9 +58,6 @@ void gui::Text::render()
 	std::shared_ptr<al::Font> font = RM.get<al::Font>(rID);
 	if(title.length()) {
 		Rect td = font->getTextDimensions(title);
-		td.b.x = std::max(td.a.x+1.0f, td.b.x);
-		td.b.y = std::max(td.a.y+1.0f, td.b.y);
-
 		font->draw(title, textColor, -td.a);
 	}
 	drawChildren();

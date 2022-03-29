@@ -35,6 +35,8 @@ gui::Window::Window(float width, float height, float x, float y)
 	isPrerenderingEnabled = false;
 
 	parent = nullptr;
+
+	drawTime = 0.00001;
 }
 
 gui::Window::Window(float width, float height)
@@ -110,7 +112,7 @@ void gui::Window::endRender()
 void gui::Window::draw()
 {
 	Point rp = ToPixels(getAbsPos());
-
+	double tic = al::GetTime();
 	ALLEGRO_TRANSFORM tr;
 	al_identity_transform(&tr);
 	al_translate_transform(&tr, int(rp.x), int(rp.y));
@@ -130,6 +132,7 @@ void gui::Window::draw()
 
 		winFrameBuffer->draw({0, 0});
 	}
+	drawTime = al::GetTime() - tic;
 }
 
 void gui::Window::registerEventHandlerProc(ALLEGRO_EVENT_TYPE type, gui::Window::EventHandler fn)
@@ -195,8 +198,7 @@ void gui::Window::drawChildren()
 
 	for(unsigned i=0; i<ids.size(); i++) {
 		idMap[ids[i]]->draw();
-	}
-	fmt::print("\n");
+	} 
 }
 
 
@@ -249,6 +251,27 @@ void gui::Window::removeChild(Window& child)
 		throw std::runtime_error("Window::removeChild() called on a non-child node");
 	}
 	children.erase(it);
+}
+
+void gui::Window::printDrawTimeSummary()
+{
+	std::vector<uint32_t> ids = idMap.keys();
+	
+	std::sort(ids.begin(), ids.end(), [&](uint32_t lhs, uint32_t rhs){
+		return idMap[lhs]->drawTime > idMap[rhs]->drawTime;
+	});
+
+	fmt::print("draw time of every window in the last frame: \n");
+	for(auto& id: ids) {
+		Window* win = idMap[id];
+		std::string ts = "not measurable";
+		if(win->drawTime != 0.0) {
+			ts = fmt::format("{:.2f} ms / {:.2f} Hz", win->drawTime*1000.0, 1.0/win->drawTime);
+		}
+		fmt::print("  [#{}], \"{}\": {}\n", id, win->getTitle(), ts);
+	}
+	
+	fmt::print("\n");
 }
 
 void gui::Window::removeChild(uint32_t id)
@@ -540,10 +563,8 @@ void gui::Window::SetEnvScale(float envScale)
 
 	RM.setScale({envScale, envScale});
 
-	for(uint32_t i=0; i<idMap.size(); i++) {
-		if(idMap.contains(i)) {
-			idMap[i]->onRescale();
-		}
+	for(auto [id, win]: idMap) {
+		win->onRescale();
 	}
 }
 
@@ -558,11 +579,5 @@ gui::Window* gui::Window::GetWindowByID(uint32_t id)
 
 std::vector<uint32_t> gui::Window::GetAllWindowIDs()
 {
-	std::vector<uint32_t> ret;
-	for(uint32_t i=0; i<idMap.size(); i++) {
-		if(idMap.contains(i)) {
-			ret.push_back(i);
-		}
-	}
-	return ret;
+	return idMap.keys();
 }

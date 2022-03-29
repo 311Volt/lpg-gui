@@ -45,20 +45,25 @@ void gui::Desktop::mainLoop()
 	eq.registerSource(al_get_keyboard_event_source());
 	eq.registerSource(al_get_mouse_event_source());
 	eq.registerSource(al_get_display_event_source(al_get_current_display()));
-
-
+	int tickNum=0;
 	while(!exitFlag) {
+
 		while(!eq.empty()) {
 			ALLEGRO_EVENT ev = eq.pop();
 			handleEvent(ev);
 		}
 		tick();
 
+		if((tickNum++) % 100 == 0) {
+			fmt::print("tickNum = {}\n",tickNum);
+		}
+
 		al_clear_to_color(al_map_rgb(0,0,0));
 		draw();
-
 		al_flip_display();
 	}
+
+	printDrawTimeSummary();
 }
 
 void gui::Desktop::onResizeEvent(const ALLEGRO_EVENT& ev)

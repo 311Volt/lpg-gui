@@ -1,6 +1,8 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_native_dialog.h>
 
+#include <axxegro/display/Display.hpp>
+
 #include <lpg/gui/gui.hpp>
 #include <lpg/util/Log.hpp>
 
@@ -8,12 +10,12 @@
 #include <cmath>
 
 #include <fmt/format.h>
-
 int main1()
 {
 	al::FullInit();
 	lpg::Log.SetVerbosity(5);
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
+	
 	al_create_display(1024, 768);
 
 	al::Config resCfg("gui/default.ini");
