@@ -16,6 +16,8 @@ namespace gui {
 		Text(float x, float y);
 		~Text();
 
+		virtual std::string_view className() {return "Text";};
+
 		static Point GetBitmapSize();
 
 		void setFont(const std::string& resName);

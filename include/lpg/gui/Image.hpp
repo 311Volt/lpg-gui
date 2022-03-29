@@ -11,6 +11,9 @@ namespace gui {
 	class Image: public Window {
 	public:
 		Image(const std::string& resName, float x, float y);
+
+		virtual std::string_view className() {return "Image";};
+
 		void setTo(const std::string& resName);
 		virtual void render() override;
 

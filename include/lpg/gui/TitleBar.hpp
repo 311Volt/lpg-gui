@@ -13,6 +13,8 @@ namespace gui {
 		TitleBar();
 		~TitleBar();
 
+		virtual std::string_view className() {return "TitleBar";};
+
 		virtual void render() override;
 		virtual void onTitleChange() override;
 		virtual void onAdoption() override;

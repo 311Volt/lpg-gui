@@ -9,6 +9,7 @@ namespace gui {
 	public:
 		TextBox(int x, int y, int w, int h);
 		
+		virtual std::string_view className() {return "TextBox";};
 	private:
 		Text txt;
 		Text cursor;

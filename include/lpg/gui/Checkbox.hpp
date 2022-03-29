@@ -12,6 +12,8 @@ namespace gui {
                 Checkbox(float x, float y, float w, float h);
                 ~Checkbox();
 
+                virtual std::string_view className() {return "Checkbox";};
+
                 bool isChecked() const;
 
                 static constexpr float DefaultWidth = 12;

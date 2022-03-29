@@ -266,9 +266,9 @@ void gui::Window::printDrawTimeSummary()
 		Window* win = idMap[id];
 		std::string ts = "not measurable";
 		if(win->drawTime != 0.0) {
-			ts = fmt::format("{:.2f} ms / {:.2f} Hz", win->drawTime*1000.0, 1.0/win->drawTime);
+			ts = fmt::format("{:.2f} ms ({:.2f} Hz)", win->drawTime*1000.0, 1.0/win->drawTime);
 		}
-		fmt::print("  [#{}], \"{}\": {}\n", id, win->getTitle(), ts);
+		fmt::print("  [#{}] -> {} \"{}\": {}\n", id, win->className(), win->getTitle(), ts);
 	}
 	
 	fmt::print("\n");

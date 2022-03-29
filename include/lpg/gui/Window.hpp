@@ -32,6 +32,8 @@ namespace gui {
 		Window(float width, float height);
 		~Window();
 
+		virtual std::string_view className() {return "Window";};
+
 		enum class EdgeType: uint8_t {
 			NONE = 0,
 			REGULAR = 1,

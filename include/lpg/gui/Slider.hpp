@@ -23,6 +23,8 @@ namespace gui {
 		Slider(int x, int y, int w, int h);
 		~Slider();
 
+		virtual std::string_view className() {return "Slider";};
+
 		void setQuantization(uint16_t newMaxValue);
 
 		bool isVertical();

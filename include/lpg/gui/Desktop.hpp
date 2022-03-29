@@ -18,6 +18,8 @@ namespace gui {
 		Desktop();
 		~Desktop();
 
+		virtual std::string_view className() {return "Desktop";};
+
 		virtual void render() override;
 		void mainLoop();
 		void setWallpaper(const std::string& resName);

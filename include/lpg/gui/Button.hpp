@@ -15,6 +15,8 @@ namespace gui {
 		Button(float w, float h, float x, float y, CallbackT callback);
 		Button(float w, float h, float x, float y);
 
+		virtual std::string_view className() {return "Button";};
+
 		void setCallback(CallbackT callback);
 		virtual void render() override;
 		virtual void tick() override;
