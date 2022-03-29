@@ -1,15 +1,20 @@
 #include <lpg/gui/TextBox.hpp>
 
 #include <algorithm>
+#include <axxegro/UStr.hpp>
 
 gui::TextBox::TextBox(int x, int y, int w, int h)
 	: Window(w, h, x, y)
 {
-	txt.setTitle("Sample Text");
 	txt.setAlignment(Alignment::LEFT_CENTER);
 	txt.setPos(Point(4,0));
 	addChild(txt);
 	addChild(cursor);
+
+	cursorPos = 0;
+
+	buffer = U"Sample Text";
+	updateText();
 	
 	cursor.setTitle("|");
 	
@@ -20,40 +25,23 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	setBgColor(al::Color::RGB(255,255,255));
 }
 
+void gui::TextBox::updateText()
+{
+	txt.setTitle(al::UStr::EncodeToUTF8(buffer));
+}
 
 void gui::TextBox::insertCharacter(int position, int32_t codepoint)
 {
-	if(position < 0 || position > txt.getTitle().size()) {
-		return;
-	}
-	char u8buf[8];
-	size_t charSize = al_utf8_encode(u8buf, codepoint);
-	u8buf[charSize] = 0;
-	std::string str = txt.getTitle();
-	
-	ALLEGRO_USTR* ustr = al_ustr_new_from_buffer(txt.getTitle().c_str(), txt.getTitle().size());
-	
-	auto pivot = str.begin() + al_ustr_offset(ustr, position);
-	
-	std::string result = 
-		std::string(str.begin(), pivot) + 
-		std::string(u8buf) + 
-		std::string(pivot, str.end())
-	;
-	txt.setTitle(result);
-	
-	al_ustr_free(ustr);
+	buffer.insert(position, {(char32_t)codepoint});
+	updateText();
 }
 
 void gui::TextBox::deleteCharacter(int position)
 {
-	if(position < 0 || position > txt.getTitle().size()) {
-		return;
+	if(position >= 0 && position <= (int)buffer.size()) {
+		buffer.erase(position, 1);
 	}
-	
-	ALLEGRO_USTR* ustr = al_ustr_new_from_buffer(txt.getTitle().c_str(), txt.getTitle().size());
-	
-	//auto off0 = str.begin() + al_ustr_offset(ustr, )
+	updateText();
 	
 }
 
@@ -66,14 +54,11 @@ void gui::TextBox::onMouseDown(const ALLEGRO_EVENT& ev)
 
 void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
 {
-	char u8buf[8];
 	if(isFocused()) {
 		if(ev.keyboard.keycode == ALLEGRO_KEY_BACKSPACE) {
-			//deleteCharacter()
+			deleteCharacter(buffer.size()-1);
 		} else if(ev.keyboard.unichar) {
-			size_t s = al_utf8_encode(u8buf, ev.keyboard.unichar);
-			u8buf[s] = 0;
-			txt.setTitle(txt.getTitle() + std::string(u8buf));
+			insertCharacter(buffer.size(), ev.keyboard.unichar);
 		}
 	}
 }

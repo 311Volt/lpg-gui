@@ -54,9 +54,8 @@ al::Bitmap* lpg::SVGLoader::createObject()
 		al::BitmapLockedRegion lr(*ret, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY);
 
 		for(int y=0; y<targetHeight; y++) {
-			uint8_t* xDDD = lr.data();
 			uint32_t* srcLine = (uint32_t*)(render.data() + 4*targetWidth*y);
-			uint32_t* dstLine = (uint32_t*)(lr.data() + lr.getPitch()*y);
+			uint32_t* dstLine = (uint32_t*)lr.rowData(y);
 
 			for(int x=0; x<targetWidth; x++) {
 				uint32_t tmp = lunaAlphaPremul(srcLine[x]);

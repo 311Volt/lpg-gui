@@ -4,6 +4,8 @@
 #include <lpg/gui/Window.hpp>
 #include <lpg/gui/Text.hpp>
 
+#include <string>
+
 namespace gui {
 	class TextBox: public Window {
 	public:
@@ -11,11 +13,14 @@ namespace gui {
 		
 		virtual std::string_view className() {return "TextBox";};
 	private:
+		std::u32string buffer;
+		int viewPos;
+		int cursorPos;
 		Text txt;
 		Text cursor;
 		
-		int cursorPos();
-		
+		void updateText();
+
 		void insertCharacter(int position, int32_t codepoint);
 		void deleteCharacter(int position);
 		

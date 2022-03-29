@@ -75,8 +75,8 @@ namespace lpg {
 			return ptr;
 		}
 	private:
-		double timeOfLastUse;
 		std::unique_ptr<ResourceLoader<T>> loader;
+		double timeOfLastUse;
 		std::shared_ptr<T> ptr;
 	};
 

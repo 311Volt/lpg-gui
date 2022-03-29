@@ -8,11 +8,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-set(CMAKE_VERBOSE_MAKEFILE TRUE)
+# set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 if(WIN32)
 	set(CMAKE_C_FLAGS "-m32")
-	set(CMAKE_CXX_FLAGS "-m32")
+	set(CMAKE_CXX_FLAGS "-m32 -Wall -Wextra -pedantic")
 endif()
 
 include_directories("include")
