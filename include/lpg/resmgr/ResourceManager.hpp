@@ -36,7 +36,7 @@ namespace lpg {
 		template<typename T>
 		std::shared_ptr<T> get(ResourceID id)
 		{
-			static_assert(std::is_base_of<al::Resource, T>::value);
+			//static_assert(std::is_base_of<al::Resource, T>::value);
 			IManagedResource* mr = getHandle(id);
 			if(ManagedResource<T>* mrt = dynamic_cast<ManagedResource<T>*>(mr)) {
 				return mrt->get();

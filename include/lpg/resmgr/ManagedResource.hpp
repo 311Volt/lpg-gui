@@ -22,7 +22,7 @@ namespace lpg {
 
 	template<typename T>
 	class ManagedResource: public IManagedResource {
-		static_assert(std::is_base_of<al::Resource, T>::value);
+		//static_assert(std::is_base_of<al::Resource, T>::value);
 	public:
 		using ResourceType = T;
 		ManagedResource(ResourceLoader<T>* loader)

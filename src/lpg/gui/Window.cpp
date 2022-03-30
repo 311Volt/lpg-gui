@@ -123,8 +123,8 @@ void gui::Window::draw()
 	} else {
 
 		if(needsRedraw) {
-			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->alPtr(), getID(), getTitle()));
-			al::ScopedTargetBitmap tb(winFrameBuffer->alPtr());
+			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()));
+			al::ScopedTargetBitmap tb(*winFrameBuffer);
 			al_clear_to_color(al_map_rgba(0,0,0,0));
 			render();
 			needsRedraw = false;
@@ -377,7 +377,7 @@ void gui::Window::resize(Point newDims)
 	bool changed = dims!=newDims;
 	dims = newDims;
 
-	if(winFrameBuffer && winFrameBuffer->alPtr() && changed) {
+	if(winFrameBuffer && changed) {
 		//TODO speed this up?
 		Point newss = getScreenSize();
 		winFrameBuffer = std::make_unique<al::Bitmap>(newss.x, newss.y);

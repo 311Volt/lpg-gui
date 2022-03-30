@@ -3,6 +3,8 @@
 #include <memory>
 #include <utility>
 
+#include <lpg/util/Log.hpp>
+
 #include <fmt/format.h>
 #include <allegro5/allegro.h>
 
@@ -36,7 +38,7 @@ al::Bitmap* lpg::SVGLoader::createObject()
 	int targetWidth = scale.x * document->width();
 	int targetHeight = scale.y * document->height();
 
-	fmt::print("creating a {}x{} bitmap from {}\n", targetWidth, targetHeight, filename);
+	lpg::Log(3, fmt::format("creating a {}x{} bitmap from {}\n", targetWidth, targetHeight, filename));
 
 
 	lunasvg::Bitmap render = document->renderToBitmap(targetWidth, targetHeight);
