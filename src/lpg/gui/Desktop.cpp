@@ -6,8 +6,8 @@
 
 gui::Desktop::Desktop()
 	: Window(
-		al_get_display_width(al_get_current_display()),
-		al_get_display_height(al_get_current_display())
+		al::CurrentDisplay().width(),
+		al::CurrentDisplay().height()
 	)
 {
 	registerEventHandler(ALLEGRO_EVENT_DISPLAY_RESIZE, &Desktop::onResizeEvent);
@@ -26,13 +26,9 @@ void gui::Desktop::setWallpaper(const std::string& resName)
 
 void gui::Desktop::render()
 {
-	al::Vec2 dispSize {
-		al_get_display_width(al_get_current_display()),
-		al_get_display_height(al_get_current_display())
-	};
 	if(rID.has_value()) {
 		std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID.value());
-		bmp->drawScaled(bmp->getRect(), {{0,0}, dispSize});
+		bmp->drawScaled(bmp->rect(), {{0,0}, al::CurrentDisplay().size()});
 	}
 
 	drawChildren();
@@ -42,9 +38,9 @@ void gui::Desktop::render()
 void gui::Desktop::mainLoop()
 {
 	al::EventQueue eq;
-	eq.registerSource(al_get_keyboard_event_source());
-	eq.registerSource(al_get_mouse_event_source());
-	eq.registerSource(al_get_display_event_source(al_get_current_display()));
+	eq.registerSource(al::keyb::GetEventSource());
+	eq.registerSource(al::mouse::GetEventSource());
+	eq.registerSource(al::CurrentDisplay().eventSource());
 	while(!exitFlag) {
 
 		while(!eq.empty()) {
@@ -53,9 +49,9 @@ void gui::Desktop::mainLoop()
 		}
 		tick();
 
-		al_clear_to_color(al_map_rgb(0,0,0));
+		al::CurrentDisplay().clearToColor(al::Color());
 		draw();
-		al_flip_display();
+		al::CurrentDisplay().flip();
 	}
 
 	printDrawTimeSummary();
@@ -68,7 +64,7 @@ void gui::Desktop::onResizeEvent(const ALLEGRO_EVENT& ev)
 
 	if(ev.any.timestamp - 1.0/RESIZE_FREQ > lastResizeEvent) {
 		lastResizeEvent = ev.any.timestamp;
-		al_acknowledge_resize(al_get_current_display());
+		al::CurrentDisplay().acknowledgeResize();
 	}
 }
 

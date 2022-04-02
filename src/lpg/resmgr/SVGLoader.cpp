@@ -70,7 +70,7 @@ al::Bitmap* lpg::SVGLoader::createObject()
 	return ret.release();
 }
 
-void lpg::SVGLoader::setScale(al::Vec2 scale)
+void lpg::SVGLoader::setScale(const al::Vec2<>& scale)
 {
 	this->scale = scale;
 }

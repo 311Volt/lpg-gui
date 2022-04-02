@@ -190,7 +190,7 @@ void lpg::ResourceManager::registerDefaultLoaders()
 }
 
 
-void lpg::ResourceManager::setScale(al::Vec2 scale)
+void lpg::ResourceManager::setScale(const al::Coord<>& scale)
 {
 	for(unsigned i=0; i<resources.size(); i++) {
 		if(!resources.contains(i)) {

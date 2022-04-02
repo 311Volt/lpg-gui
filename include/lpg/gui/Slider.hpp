@@ -37,7 +37,6 @@ namespace gui {
 	private:
 		void onMouseMove(const ALLEGRO_EVENT& ev);
 		Text caption;
-		Point clickPos;
 		ValueFn valueFn;
 		Button handle;
 		uint16_t maxValue;

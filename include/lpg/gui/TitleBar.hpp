@@ -23,7 +23,7 @@ namespace gui {
 		void onMouseUp(const ALLEGRO_EVENT& ev);
 		void onMouseMove(const ALLEGRO_EVENT& ev);
 
-		Point clickPos, startPos;
+		al::Coord<int> clickPos, startPos;
 		Text caption;
 	};
 }

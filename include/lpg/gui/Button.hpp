@@ -32,7 +32,7 @@ namespace gui {
 		State getState();
 		void setTrigger(std::pair<State,State> trigger);
 
-		Point getLastClickMousePos();
+		al::Coord<int> getLastClickMousePos();
 	protected:
 		State state;
 		std::pair<State,State> trigger;
@@ -44,8 +44,7 @@ namespace gui {
 		void onMouseUp(const ALLEGRO_EVENT& ev);
 		void onMouseMove(const ALLEGRO_EVENT& ev);
 
-		Point clickPos;
-		al::Font font;
+		al::Coord<int> clickPos;
 		Text caption;
 		CallbackT callback;
 	};

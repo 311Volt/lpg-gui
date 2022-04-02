@@ -11,11 +11,11 @@ namespace lpg {
 	public:
 		SVGLoader(const std::string& filename);
 		virtual al::Bitmap* createObject() override;
-		virtual void setScale(al::Vec2 scale) override;
+		virtual void setScale(const al::Vec2<>& scale) override;
 	private:
 		std::string filename;
 		std::unique_ptr<lunasvg::Document> document;
-		al::Vec2 scale;
+		al::Vec2<> scale;
 	};
 }
 

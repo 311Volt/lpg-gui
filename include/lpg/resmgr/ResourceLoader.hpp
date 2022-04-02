@@ -8,7 +8,7 @@ namespace lpg {
 
 	class ScaleAwareLoader {
 	public:
-		virtual void setScale(al::Vec2 scale) = 0;
+		virtual void setScale(const al::Vec2<>& scale) = 0;
 	};
 
 	class IResourceLoader {

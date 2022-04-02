@@ -51,7 +51,7 @@ namespace lpg {
 			return get<T>(getIdOf(name));
 		}
 
-		void setScale(al::Vec2 scale);
+		void setScale(const al::Vec2<>& scale);
 
 		void releaseUnusedResources();
 		void releaseAllResources();

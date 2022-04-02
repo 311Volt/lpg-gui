@@ -15,7 +15,7 @@ void gui::Image::setTo(const std::string& resName)
 	rID = RM.getIdOf(resName);
 
 	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
-	resize(ToUnits(bmp->getSize()));
+	resize(ToUnits(bmp->size()));
 }
 
 void gui::Image::render()
@@ -24,6 +24,6 @@ void gui::Image::render()
 		return;
 
 	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
-	bmp->drawScaled(bmp->getRect(), {{0,0}, getScreenSize()});
+	bmp->drawScaled(bmp->rect(), {{0,0}, getScreenSize()});
 }
 

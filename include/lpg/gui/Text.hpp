@@ -18,8 +18,6 @@ namespace gui {
 
 		virtual std::string_view className() {return "Text";};
 
-		static Point GetBitmapSize();
-
 		void setFont(const std::string& resName);
 
 		virtual void onRescale() override;

@@ -7,7 +7,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	: Window(w, h, x, y)
 {
 	txt.setAlignment(Alignment::LEFT_CENTER);
-	txt.setPos(Point(4,0));
+	txt.setPos({4,0});
 	addChild(txt);
 	addChild(cursor);
 
@@ -48,7 +48,7 @@ void gui::TextBox::deleteCharacter(int position)
 void gui::TextBox::onMouseDown(const ALLEGRO_EVENT& ev)
 {
 	focused = IsClickEvent(ev, MouseBtn::LEFT, getScreenRectangle());
-	setBgColor(al_map_rgb(255-int(focused)*40,255,255));
+	setBgColor(al::Color::RGB(255-int(focused)*40,255,255));
 }
 
 

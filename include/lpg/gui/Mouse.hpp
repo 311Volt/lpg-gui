@@ -12,13 +12,13 @@ namespace gui {
 		RIGHT = 2
 	};
 
-	bool IsMouseInRect(const ALLEGRO_EVENT& ev, const al::Rect& r);
+	bool IsMouseInRect(const ALLEGRO_EVENT& ev, const al::Rect<int>& r);
 
 	bool IsClickEvent(const ALLEGRO_EVENT& ev, MouseBtn btn);
 	bool IsReleaseEvent(const ALLEGRO_EVENT& ev, MouseBtn btn);
 
-	bool IsClickEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const al::Rect& r);
-	bool IsReleaseEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const al::Rect& r);
+	bool IsClickEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const al::Rect<int>& r);
+	bool IsReleaseEvent(const ALLEGRO_EVENT& ev, MouseBtn btn, const al::Rect<int>& r);
 }
 
 #endif // LPG_GUI_MOUSE_H

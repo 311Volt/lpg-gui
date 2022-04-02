@@ -24,8 +24,6 @@
 
 namespace gui {
 
-	using al::Point, al::Vec2, al::Rect;
-
 	class Window {
 	public:
 		Window(float width, float height, float x, float y);
@@ -103,15 +101,15 @@ namespace gui {
 		void setZIndex(int n);
 		int getZIndex() const;
 
-		Point getRelPos() const;
-		Point getAbsPos() const;
-		Rect getRect() const;
+		al::Coord<> getRelPos() const;
+		al::Coord<> getAbsPos() const;
+		al::Rect<> getRect() const;
 
-		static Point ToPixels(Point p);
-		static Point ToUnits(Point p);
+		static al::Coord<> ToPixels(const al::Coord<>& p);
+		static al::Coord<> ToUnits(const al::Coord<>& p);
 
-		static Rect ToPixels(Rect r);
-		static Rect ToUnits(Rect r);
+		static al::Rect<> ToPixels(const al::Rect<>& r);
+		static al::Rect<> ToUnits(const al::Rect<>& r);
 
 		float getRelX() const;
 		float getRelY() const;
@@ -122,18 +120,20 @@ namespace gui {
 		float getWidth() const;
 		float getHeight() const;
 
-		void resize(Point newDims);
+		void resize(al::Coord<> newDims);
 		void resize(float w, float h);
 
 		void setAlignment(Alignment alignment);
 
 		void getScreenRectangle(float* x1, float* y1, float* x2, float* y2) const;
-		Rect getScreenRectangle() const;
+		al::Rect<> getScreenRectangle() const;
+
+		al::Rect<> getRelScreenRectangle() const;
 
 		void getScreenSize(float* w, float* h) const;
-		Point getScreenSize() const;
+		al::Vec2<> getScreenSize() const;
 
-		void setPos(Point p);
+		void setPos(const al::Coord<>& p);
 
 		void setTextColor(al::Color color);
 		void setBgColor(al::Color color);
@@ -185,8 +185,8 @@ namespace gui {
 
 		//position and dimensions
 		Alignment alignment;
-		Point offset;
-		Point dims;
+		al::Coord<> offset;
+		al::Coord<> dims;
 
 		//metadata
 		uint32_t id;

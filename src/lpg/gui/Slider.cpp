@@ -35,8 +35,8 @@ gui::Slider::Slider(int x, int y, int w, int h)
 	}
 
         handle.setCallback([this](){
-		Point cl = handle.getLastClickMousePos();
-		Point sc = handle.getScreenRectangle().a;
+		al::Coord<> cl = handle.getLastClickMousePos();
+		al::Coord<> sc = handle.getScreenRectangle().a;
 		handleDragOffset = isVertical() ? (cl.y-sc.y) : (cl.x-sc.x);
 		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Slider::onMouseMove);
 	});
@@ -55,8 +55,8 @@ gui::Slider::~Slider()
 void gui::Slider::onMouseMove(const ALLEGRO_EVENT& ev)
 {
 	if(maxValue && handle.getState() == Button::State::DOWN) {
-		Vec2 hSize = handle.getScreenRectangle().getSize();
-		Rect sc = getScreenRectangle();
+		al::Vec2<> hSize = handle.getScreenRectangle().size();
+		al::Rect<> sc = getScreenRectangle();
 		int hw = isVertical() ? hSize.y : hSize.x;
                 float m0 = (isVertical()?sc.a.y:sc.a.x) + handleDragOffset;
                 float m1 = (isVertical()?sc.b.y:sc.b.x) - hw + handleDragOffset;
@@ -65,15 +65,15 @@ void gui::Slider::onMouseMove(const ALLEGRO_EVENT& ev)
                 float f = (mp-m0) / (m1-m0);
                 setRawValue(f*maxValue);
 
-		Rect r = getRect(), hr = handle.getRect();
+		al::Rect<> r = getRect(), hr = handle.getRect();
 		float s0 = isVertical() ? r.a.y : r.a.x;
-		float s1 = isVertical() ? (r.b.y-hr.getSize().y) : (r.b.x-hr.getSize().x);
+		float s1 = isVertical() ? (r.b.y-hr.size().y) : (r.b.x-hr.size().x);
 		float fp = ((float)value/(float)maxValue);
 		float sp = fp*(s1-s0);
 		if(isVertical()) {
-			handle.setPos(Point(handle.getRelX(), sp));
+			handle.setPos(al::Coord<>(handle.getRelX(), sp));
 		} else {
-			handle.setPos(Point(sp, handle.getRelY()));
+			handle.setPos(al::Coord<>(sp, handle.getRelY()));
 		}
 
 	} else {

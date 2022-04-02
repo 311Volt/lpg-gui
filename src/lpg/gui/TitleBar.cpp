@@ -9,7 +9,7 @@ gui::TitleBar::TitleBar()
 
 	caption.setAlignment(Alignment::LEFT_CENTER);
 	caption.setTextColor(al::Color::RGB(255,255,255));
-	caption.setPos(Point(4,1));
+	caption.setPos({4,1});
 	addChild(caption);
 
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TitleBar::onMouseDown);
@@ -24,7 +24,7 @@ gui::TitleBar::~TitleBar()
 void gui::TitleBar::onMouseDown(const ALLEGRO_EVENT& ev)
 {
 	if(IsClickEvent(ev, MouseBtn::LEFT, getScreenRectangle())) {
-		clickPos = Point(ev.mouse.x, ev.mouse.y);
+		clickPos = {ev.mouse.x, ev.mouse.y};
 		startPos = ToPixels(parent->getAbsPos());
 		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &TitleBar::onMouseMove);
 	}
@@ -39,7 +39,7 @@ void gui::TitleBar::onMouseUp(const ALLEGRO_EVENT& ev)
 
 void gui::TitleBar::onMouseMove(const ALLEGRO_EVENT& ev)
 {
-	Point mousePos(ev.mouse.x,ev.mouse.y);
+	al::Coord<int> mousePos {ev.mouse.x,ev.mouse.y};
 	parent->setPos(ToUnits(mousePos + startPos - clickPos));
 }
 

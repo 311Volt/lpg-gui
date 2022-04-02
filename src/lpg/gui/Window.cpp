@@ -15,7 +15,7 @@ float gui::Window::EnvScale = 1.0;
 gui::Window::Window(float width, float height, float x, float y)
 {
 	resize(width, height);
-	setPos(Point(x, y));
+	setPos({x, y});
 
 	textColor = al::Color::RGB(0,0,0);
 	bgColor = al::Color::RGB(192,192,192);
@@ -25,7 +25,7 @@ gui::Window::Window(float width, float height, float x, float y)
 	id = idMap.insert(this);
 
 	title = fmt::format("Unnamed window [#{}]", id);
-	creationTime = al_get_time();
+	creationTime = al::GetTime();
 
 	zIndex = 0;
 	focused = true;
@@ -69,31 +69,40 @@ void gui::Window::tick()
 
 void gui::Window::render()
 {
-	float w, h;
-	getScreenSize(&w, &h);
-	w = int(w);
-	h = int(h);
+	al::Rect<int> win = getRelScreenRectangle();
+	al::Vec2<int> ob1x = {1, 0};
+	al::Rect<int> inner = {win.a + al::Vec2<int>(1,1), win.b - al::Vec2<int>(1,1)};
 
-	al_draw_filled_rectangle(0, 0, w, h, bgColor.get());
+	al::Color sh1 = al::Col::Black;
+	al::Color sh2 = al::Color::PremulRGBA(0,0,0,86);
+	al::Color sh3 = bgColor;
+	al::Color sh4 = al::Col::White;
 
+	al::DrawFilledRectangle(win, bgColor);
 	if(edgeType == EdgeType::REGULAR) {
-		al_draw_rectangle(0, 0, w, h, al_map_rgb(255,255,255), 1.0);
+		al::DrawRectangle(win, sh4);
 	} else if(edgeType == EdgeType::BEVELED) {
-		al_draw_line(0, 1, w-1, 0, al_map_rgb(255,255,255), 1.0); //top
-		al_draw_line(1, 0, 0, h-1, al_map_rgb(255,255,255), 1.0); //left
-		al_draw_line(0, h, w, h, al_map_rgb(0, 0, 0), 1.0);       //bottom
-		al_draw_line(w, 0, w, h, al_map_rgb(0, 0, 0), 1.0);       //right
 
-		al_draw_line(0+1, h-1, w-1, h-1, al_premul_rgba(0, 0, 0, 86), 1.0); //bottom
-		al_draw_line(w-1, 0+1, w-1, h-1, al_premul_rgba(0, 0, 0, 86), 1.0); //right
+		al::DrawLine(win.bottomLeft(), win.bottomRight(), sh1);
+		al::DrawLine(win.topRight(), win.bottomRight(), sh1);
+		
+		al::DrawLine(win.topLeft()-ob1x, win.topRight(), sh4);
+		al::DrawLine(win.topLeft(), win.bottomLeft(), sh4);
+
+		al::DrawLine(inner.bottomLeft(), inner.bottomRight(), sh2);
+		al::DrawLine(inner.topRight(), inner.bottomRight(), sh2);
 	} else if(edgeType == EdgeType::BEVELED_INWARD) {
-		al_draw_line(0, 1, w-1, 0, al_map_rgb(0,0,0), 1.0); //top
-		al_draw_line(1, 0, 0, h-1, al_map_rgb(0,0,0), 1.0); //left
-		al_draw_line(0, h, w, h, al_map_rgb(255, 255, 255), 1.0);       //bottom
-		al_draw_line(w, 0, w, h, al_map_rgb(255, 255, 255), 1.0);       //right
+		al::DrawLine(win.bottomLeft(), win.bottomRight(), sh4);
+		al::DrawLine(win.topRight(), win.bottomRight(), sh4);
+		
+		al::DrawLine(win.topLeft()-ob1x, win.bottomLeft(), sh2);
+		al::DrawLine(win.topLeft(), win.topRight(), sh2);
 
-		al_draw_line(0+1, 1+1, w-1, 0+1, al_premul_rgba(0, 0, 0, 86), 1.0); //top
-		al_draw_line(1+1, 0+1, 0+1, h-1, al_premul_rgba(0, 0, 0, 86), 1.0); //left
+		al::DrawLine(inner.topLeft()-ob1x, inner.topRight(), sh1);
+		al::DrawLine(inner.topLeft(), inner.bottomLeft(), sh1);
+
+		al::DrawLine(inner.bottomLeft(), inner.bottomRight(), sh3);
+		al::DrawLine(inner.topRight(), inner.bottomRight(), sh3);
 	}
 
 	drawChildren();
@@ -111,12 +120,11 @@ void gui::Window::endRender()
 
 void gui::Window::draw()
 {
-	Point rp = ToPixels(getAbsPos());
+	al::Coord<> rp = ToPixels(getAbsPos());
 	double tic = al::GetTime();
-	ALLEGRO_TRANSFORM tr;
-	al_identity_transform(&tr);
-	al_translate_transform(&tr, int(rp.x), int(rp.y));
-	al::ScopedTransform st(&tr);
+	al::Transform tr;
+	tr.translate(rp);
+	al::ScopedTransform st(tr);
 
 	if(!isPrerenderingEnabled) {
 		render();
@@ -125,7 +133,7 @@ void gui::Window::draw()
 		if(needsRedraw) {
 			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()));
 			al::ScopedTargetBitmap tb(*winFrameBuffer);
-			al_clear_to_color(al_map_rgba(0,0,0,0));
+			al::CurrentDisplay().clearToColor(al::Color::RGBA(0,0,0,0));
 			render();
 			needsRedraw = false;
 		}
@@ -298,11 +306,11 @@ int gui::Window::getZIndex() const
 }
 
 
-gui::Point gui::Window::getRelPos() const
+al::Coord<> gui::Window::getRelPos() const
 {
 	float xFactor = float(static_cast<uint8_t>(alignment) >> 2) * 0.5;
 	float yFactor = float(static_cast<uint8_t>(alignment) & 3) * 0.5;
-	Point ret = offset;
+	al::Coord<> ret = offset;
 
 	if(parent) {
 		ret.x += xFactor * (parent->getWidth() - getWidth());
@@ -311,34 +319,34 @@ gui::Point gui::Window::getRelPos() const
 	return ret;
 }
 
-gui::Point gui::Window::getAbsPos() const
+al::Coord<> gui::Window::getAbsPos() const
 {
-	return getRelPos() + (parent ? (parent->getAbsPos()) : Point());
+	return getRelPos() + (parent ? (parent->getAbsPos()) : al::Coord<>());
 }
 
-gui::Rect gui::Window::getRect() const
+al::Rect<> gui::Window::getRect() const
 {
-	return Rect(getRelPos(), getRelPos()+dims);
+	return al::Rect(getRelPos(), getRelPos()+dims);
 }
 
-gui::Point gui::Window::ToPixels(gui::Point p)
+al::Coord<> gui::Window::ToPixels(const al::Coord<>& p)
 {
 	return p * GetEnvScale();
 }
 
-gui::Point gui::Window::ToUnits(gui::Point p)
+al::Coord<> gui::Window::ToUnits(const al::Coord<>& p)
 {
 	return p / GetEnvScale();
 }
 
-gui::Rect gui::Window::ToPixels(gui::Rect r)
+al::Rect<> gui::Window::ToPixels(const al::Rect<>& r)
 {
-	return Rect(ToPixels(r.a), ToPixels(r.b));
+	return al::Rect<>(ToPixels(r.a), ToPixels(r.b));
 }
 
-gui::Rect gui::Window::ToUnits(gui::Rect r)
+al::Rect<> gui::Window::ToUnits(const al::Rect<>& r)
 {
-	return Rect(ToUnits(r.a), ToUnits(r.b));
+	return al::Rect<>(ToUnits(r.a), ToUnits(r.b));
 }
 
 
@@ -372,14 +380,14 @@ float gui::Window::getHeight() const
 	return dims.y;
 }
 
-void gui::Window::resize(Point newDims)
+void gui::Window::resize(al::Vec2<> newDims)
 {
 	bool changed = dims!=newDims;
 	dims = newDims;
 
 	if(winFrameBuffer && changed) {
 		//TODO speed this up?
-		Point newss = getScreenSize();
+		al::Vec2<> newss = getScreenSize();
 		winFrameBuffer = std::make_unique<al::Bitmap>(newss.x, newss.y);
 		needsRedraw = true;
 	}
@@ -387,37 +395,44 @@ void gui::Window::resize(Point newDims)
 
 void gui::Window::resize(float w, float h)
 {
-	resize(Point(w,h));
+	resize(al::Vec2<>(w,h));
 }
 
-gui::Rect gui::Window::getScreenRectangle() const
+al::Rect<> gui::Window::getRelScreenRectangle() const
 {
-	return ToPixels(Rect(getAbsPos(), getAbsPos()+dims));
+	return ToPixels(al::Rect<>::PosSize({}, dims));
 }
+
+al::Rect<> gui::Window::getScreenRectangle() const
+{
+	return ToPixels(al::Rect<>::PosSize(getAbsPos(), dims));
+}
+
+
 
 void gui::Window::getScreenRectangle(float* x1, float* y1, float* x2, float* y2) const
 {
-	Rect r = getScreenRectangle();
+	auto r = getScreenRectangle();
 	*x1 = r.a.x;
 	*y1 = r.a.y;
 	*x2 = r.b.x;
 	*y2 = r.b.y;
 }
 
-gui::Point gui::Window::getScreenSize() const
+al::Vec2<> gui::Window::getScreenSize() const
 {
-	Rect r = getScreenRectangle();
-	return Point(r.getWidth(), r.getHeight());
+	auto r = getScreenRectangle();
+	return {r.width(), r.height()};
 }
 
 void gui::Window::getScreenSize(float* w, float* h) const
 {
-	Point p = getScreenSize();
+	auto p = getScreenSize();
 	*w = p.x;
 	*h = p.y;
 }
 
-void gui::Window::setPos(Point p)
+void gui::Window::setPos(const al::Coord<>& p)
 {
 	offset = p;
 }
@@ -457,7 +472,7 @@ void gui::Window::enablePrerendering()
 {
 	if(!isPrerenderingEnabled) {
 		isPrerenderingEnabled = true;
-		Point ss = getScreenSize();
+		auto ss = getScreenSize();
 		winFrameBuffer = std::make_unique<al::Bitmap>(ss.x, ss.y);
 		needsRedraw = true;
 	}

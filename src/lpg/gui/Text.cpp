@@ -45,19 +45,19 @@ void gui::Text::onTitleChange()
 {
 	std::shared_ptr<al::Font> font = RM.get<al::Font>(rID);
 	
-	Rect td = font->getTextDimensions(title);
-	td.b += {1.0f, 1.0f};
-	td.b.x = std::max(td.a.x+5.0f, td.b.x);
-	td.b.y = std::max(td.a.y+5.0f, td.b.y);
+	al::Rect<int> td = font->getTextDimensions(title);
+	td.b += {1, 1};
+	td.b.x = std::max(td.a.x+5.0f, td.b.x+0.0f);
+	td.b.y = std::max(td.a.y+5.0f, td.b.y+0.0f);
 
-	resize(ToUnits(td.getSize()));
+	resize(ToUnits(td.size()));
 }
 
 void gui::Text::render()
 {
 	std::shared_ptr<al::Font> font = RM.get<al::Font>(rID);
 	if(title.length()) {
-		Rect td = font->getTextDimensions(title);
+		al::Rect<int> td = font->getTextDimensions(title);
 		font->draw(title, textColor, -td.a);
 	}
 	drawChildren();
