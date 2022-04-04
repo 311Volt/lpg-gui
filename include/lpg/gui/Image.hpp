@@ -17,7 +17,6 @@ namespace gui {
 		void setTo(const std::string& resName);
 		virtual void render() override;
 
-		bool visible;
 	private:
 		std::string resName;
 		lpg::ResourceManager::ResourceID rID;

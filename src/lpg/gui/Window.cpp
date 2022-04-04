@@ -31,6 +31,8 @@ gui::Window::Window(float width, float height, float x, float y)
 	focused = true;
 	exitFlag = false;
 
+	visible = true;
+
 	needsRedraw = true;
 	isPrerenderingEnabled = false;
 
@@ -70,7 +72,7 @@ void gui::Window::tick()
 void gui::Window::render()
 {
 	al::Rect<int> win = getRelScreenRectangle();
-	al::Vec2<int> ob1x = {1, 0};
+	al::Vec2<float> ob1x = {0.9, 0};
 	al::Rect<int> inner = {win.a + al::Vec2<int>(1,1), win.b - al::Vec2<int>(1,1)};
 
 	al::Color sh1 = al::Col::Black;
@@ -95,7 +97,7 @@ void gui::Window::render()
 		al::DrawLine(win.bottomLeft(), win.bottomRight(), sh4);
 		al::DrawLine(win.topRight(), win.bottomRight(), sh4);
 		
-		al::DrawLine(win.topLeft()-ob1x, win.bottomLeft(), sh2);
+		al::DrawLine(win.topLeft(), win.bottomLeft(), sh2);
 		al::DrawLine(win.topLeft(), win.topRight(), sh2);
 
 		al::DrawLine(inner.topLeft()-ob1x, inner.topRight(), sh1);
@@ -120,11 +122,14 @@ void gui::Window::endRender()
 
 void gui::Window::draw()
 {
-	al::Coord<> rp = ToPixels(getAbsPos());
+	al::Coord<int> rp = ToPixels(getAbsPos());
 	double tic = al::GetTime();
 	al::Transform tr;
 	tr.translate(rp);
 	al::ScopedTransform st(tr);
+
+	if(!visible)
+		return;
 
 	if(!isPrerenderingEnabled) {
 		render();

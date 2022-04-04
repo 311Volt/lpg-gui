@@ -11,12 +11,14 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	addChild(txt);
 	addChild(cursor);
 
+	viewPos = 0;
 	cursorPos = 0;
 
 	buffer = U"Sample Text";
 	updateText();
 	
 	cursor.setTitle("|");
+	cursor.visible = false;
 	
 	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, &TextBox::onKeyChar);
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TextBox::onMouseDown);
@@ -27,7 +29,12 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 
 void gui::TextBox::updateText()
 {
-	txt.setTitle(al::UStr::EncodeToUTF8(buffer));
+	auto font = RM.get<al::Font>(txt.getFontID());
+	auto sub = buffer.substr(viewPos);
+	auto cut = font->calcCutoffPoint(sub, getScreenRectangle().width());
+	sub = sub.substr(0, cut);
+
+	txt.setTitle(al::UStr::EncodeToUTF8(sub));
 }
 
 void gui::TextBox::insertCharacter(int position, int32_t codepoint)
@@ -51,13 +58,12 @@ void gui::TextBox::onMouseDown(const ALLEGRO_EVENT& ev)
 	setBgColor(al::Color::RGB(255-int(focused)*40,255,255));
 }
 
-
 void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
 {
 	if(isFocused()) {
 		if(ev.keyboard.keycode == ALLEGRO_KEY_BACKSPACE) {
 			deleteCharacter(buffer.size()-1);
-		} else if(ev.keyboard.unichar) {
+		} else if(ev.keyboard.unichar >= 32) {
 			insertCharacter(buffer.size(), ev.keyboard.unichar);
 		}
 	}

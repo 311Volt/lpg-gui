@@ -14,6 +14,7 @@ gui::Text::Text(float x, float y)
 	setFont("DefaultFont");
 	setTitle("");
 	enablePrerendering();
+	
 }
 
 gui::Text::Text()
@@ -39,6 +40,10 @@ void gui::Text::onRescale()
 	onTitleChange();
 }
 
+lpg::ResourceManager::ResourceID gui::Text::getFontID()
+{
+	return rID;
+}
 
 
 void gui::Text::onTitleChange()

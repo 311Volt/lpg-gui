@@ -23,6 +23,8 @@ namespace gui {
 		virtual void onRescale() override;
 		virtual void onTitleChange() override;
 		virtual void render() override;
+
+		lpg::ResourceManager::ResourceID getFontID();
 	private:
 		lpg::ResourceManager::ResourceID rID;
 		std::string text;

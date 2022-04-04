@@ -158,6 +158,8 @@ namespace gui {
 		static std::vector<uint32_t> GetAllWindowIDs();
 
 		static lpg::ResourceManager RM;
+		
+		bool visible;
 
 	protected:
 		static float EnvScale;

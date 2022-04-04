@@ -13,7 +13,8 @@
 int main1()
 {
 	al::FullInit();
-	lpg::Log.SetVerbosity(5);
+	al::Bitmap::SetNewBitmapFlags(ALLEGRO_MIPMAP | ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
+	lpg::Log.SetVerbosity(2);
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
 	
 	al_create_display(1024, 768);

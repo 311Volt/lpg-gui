@@ -3,7 +3,7 @@
 #include <cmath>
 
 gui::Image::Image(const std::string& resName, float x, float y)
-	: Window(0, 0, x, y), visible(true)
+	: Window(0, 0, x, y)
 {
 	setTo(resName);
 	setTitle("An image");
@@ -20,9 +20,6 @@ void gui::Image::setTo(const std::string& resName)
 
 void gui::Image::render()
 {
-	if(!visible)
-		return;
-
 	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
 	bmp->drawScaled(bmp->rect(), {{0,0}, getScreenSize()});
 }
