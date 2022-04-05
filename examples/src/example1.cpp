@@ -28,11 +28,11 @@ int main1()
 	gui::Window win(200, 350, 20, 20);
 	win.give(std::make_unique<gui::TitleBar>());
 
-	gui::Text close(10, 30);
-	close.setTitle("Press ESC to exit");
+	gui::Text close(10, 30, 100, 40);
+	close.setText(U"Press ESC §h00FF00 to exit");
 
-	gui::Text scaleInfo(10, 50);
-	scaleInfo.setTitle("Scale: 1.00");
+	gui::Text scaleInfo(10, 50, 100, 40);
+	scaleInfo.setText(U"Scale: 1.00");
 
 	gui::Button upscale(70, 30, 20, 80);
 	upscale.setTitle("Scale+");

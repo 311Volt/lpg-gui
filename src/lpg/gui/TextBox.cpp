@@ -6,6 +6,9 @@
 gui::TextBox::TextBox(int x, int y, int w, int h)
 	: Window(w, h, x, y)
 {
+	txt.resize(this->dims);
+	cursor.resize(this->dims);
+
 	txt.setAlignment(Alignment::LEFT_CENTER);
 	txt.setPos({4,0});
 	addChild(txt);
@@ -17,7 +20,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	buffer = U"Sample Text";
 	updateText();
 	
-	cursor.setTitle("|");
+	cursor.setText(U"|");
 	cursor.visible = false;
 	
 	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, &TextBox::onKeyChar);
