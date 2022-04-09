@@ -7,6 +7,7 @@ gui::TitleBar::TitleBar()
 	setBgColor(al::Color::RGB(0,0,192));
 	setEdgeType(EdgeType::NONE);
 
+	caption.setSizeMode(Text::SizeMode::AUTO);
 	caption.setAlignment(Alignment::LEFT_CENTER);
 	caption.setTextColor(al::Color::RGB(255,255,255));
 	caption.setPos({4,1});
@@ -45,7 +46,7 @@ void gui::TitleBar::onMouseMove(const ALLEGRO_EVENT& ev)
 
 void gui::TitleBar::onTitleChange()
 {
-	caption.setTitle(parent->getTitle());
+	caption.setText(parent->getTitle());
 }
 
 void gui::TitleBar::render()
