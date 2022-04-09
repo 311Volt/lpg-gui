@@ -19,10 +19,11 @@ namespace lpg {
 	class ResourcePtrNotUnique: public std::runtime_error {using std::runtime_error::runtime_error;};
 	class ResourceTypeMismatch: public std::runtime_error {using std::runtime_error::runtime_error;};
 
+	using ResourceID = uint32_t;
+	
 	class ResourceManager {
 	public:
 		using TypeLoader = std::function<IManagedResource*(const std::string&)>;
-		using ResourceID = uint32_t;
 
 		void registerDefaultLoaders();
 

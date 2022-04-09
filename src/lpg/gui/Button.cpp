@@ -12,6 +12,7 @@ gui::Button::Button(float w, float h, float x, float y, CallbackT callback)
 	trigger = std::make_pair(State::DOWN, State::DEFAULT);
 	caption.setAlignment(Alignment::CENTER);
 	caption.setPos({0,0});
+	caption.setSizeMode(Text::SizeMode::AUTO);
 	clickPos = {0,0};
 	addChild(caption);
 
@@ -36,6 +37,12 @@ void gui::Button::setTrigger(std::pair<Button::State,Button::State> trigger)
 	this->trigger = trigger;
 }
 
+void gui::Button::onTitleChange()
+{
+
+	caption.setText(getTitle());
+}
+
 void gui::Button::render()
 {
 	Window::render();
@@ -43,7 +50,6 @@ void gui::Button::render()
 
 void gui::Button::tick()
 {
-	caption.setTitle(getTitle());
 	Window::tick();
 }
 

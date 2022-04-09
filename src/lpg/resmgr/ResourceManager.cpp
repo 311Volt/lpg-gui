@@ -31,7 +31,7 @@ void lpg::ResourceManager::registerLoader(const std::string& typeName, lpg::Reso
 {
 	loaders[typeName] = loader;
 }
-lpg::ResourceManager::ResourceID lpg::ResourceManager::addResource(const std::string& type, const std::string& name, const std::string& args)
+lpg::ResourceID lpg::ResourceManager::addResource(const std::string& type, const std::string& name, const std::string& args)
 {
 	if(loaders.count(type) == 0) {
 		throw ResourceLoaderNotRegistered(fmt::format(
@@ -55,7 +55,7 @@ lpg::ResourceManager::ResourceID lpg::ResourceManager::addResource(const std::st
 	return id;
 }
 
-lpg::ResourceManager::ResourceID lpg::ResourceManager::getIdOf(const std::string& resourceName)
+lpg::ResourceID lpg::ResourceManager::getIdOf(const std::string& resourceName)
 {
 	try {
 		return nameMap.at(resourceName);
@@ -68,7 +68,7 @@ lpg::ResourceManager::ResourceID lpg::ResourceManager::getIdOf(const std::string
 }
 
 
-std::string lpg::ResourceManager::getNameOf(lpg::ResourceManager::ResourceID id)
+std::string lpg::ResourceManager::getNameOf(lpg::ResourceID id)
 {
 	try {
 		return idMap.at(id);
@@ -81,7 +81,7 @@ std::string lpg::ResourceManager::getNameOf(lpg::ResourceManager::ResourceID id)
 }
 
 
-void lpg::ResourceManager::checkUnique(lpg::ResourceManager::ResourceID id)
+void lpg::ResourceManager::checkUnique(lpg::ResourceID id)
 {
 	auto& res = resources[id];
 	if(res->refCount() > 1) {
@@ -123,7 +123,7 @@ void lpg::ResourceManager::releaseAllResources()
 }
 
 
-void lpg::ResourceManager::throwMismatch(const std::type_info& expected, const std::type_info& actual, lpg::ResourceManager::ResourceID id)
+void lpg::ResourceManager::throwMismatch(const std::type_info& expected, const std::type_info& actual, lpg::ResourceID id)
 {
 	throw ResourceTypeMismatch(fmt::format(
 		"resource type mismatch: get<{}> called on \"{}\" (id={}), which holds a resource of type {}",
@@ -134,7 +134,7 @@ void lpg::ResourceManager::throwMismatch(const std::type_info& expected, const s
 	));
 }
 
-lpg::IManagedResource* lpg::ResourceManager::getHandle(lpg::ResourceManager::ResourceID id)
+lpg::IManagedResource* lpg::ResourceManager::getHandle(lpg::ResourceID id)
 {
 	try {
 		return (lpg::IManagedResource*)resources.at(id).get();

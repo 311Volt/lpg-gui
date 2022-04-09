@@ -21,6 +21,8 @@ namespace gui {
 		virtual void render() override;
 		virtual void tick() override;
 
+		virtual void onTitleChange() override;
+
 		virtual void onDefault();
 		virtual void onHover();
 		virtual void onDown();

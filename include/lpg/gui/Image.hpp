@@ -19,7 +19,7 @@ namespace gui {
 
 	private:
 		std::string resName;
-		lpg::ResourceManager::ResourceID rID;
+		lpg::ResourceID rID;
 	};
 }
 

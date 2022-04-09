@@ -27,11 +27,18 @@ namespace gui {
 		virtual void onTitleChange() override;
 		virtual void render() override;
 
-		lpg::ResourceManager::ResourceID getFontID();
+		lpg::ResourceID getFontID();
 
 		constexpr static char32_t TXT_FMT_CHAR = 0x00A7;
 
+		enum class SizeMode: uint8_t {
+			NORMAL = 0,
+			AUTO = 1
+		};
 		
+		void update();
+		void setSizeMode(SizeMode mode);
+
 		/**
 		 * available formatting tokens:
 		 * FMT_CHAR+h - long color (0xRRGGBB)
@@ -42,7 +49,7 @@ namespace gui {
 		 */
 
 		struct FmtToken {
-			std::variant<al::Color, lpg::ResourceManager::ResourceID> dat;
+			std::variant<al::Color, lpg::ResourceID> dat;
 			uint32_t length;
 		};
 
@@ -51,19 +58,23 @@ namespace gui {
 			std::string u8text;
 			al::Color color;
 			al::Vec2<int> pos;
-			lpg::ResourceManager::ResourceID rID;
+			al::Rect<int> textDimensions;
+			lpg::ResourceID rID;
 		};
-
-		void setText(const std::u32string_view text);
-
-	private:
+		
+		void setText(const std::string_view text);
+	protected:
 		std::u32string buffer;
+	private:
 		std::optional<FmtToken> tryParseToken(const std::u32string_view tok);
-		std::vector<RenderChunk> buildRenderChunkList();
+		void buildRenderChunkList();
+		void autoResize();
+		std::vector<RenderChunk> renderChunks;
+		
+		SizeMode sizeMode;
 
 
-
-		lpg::ResourceManager::ResourceID rID;
+		lpg::ResourceID rID;
 		std::string text;
 	};
 }

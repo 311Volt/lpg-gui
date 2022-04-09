@@ -21,6 +21,6 @@ void gui::Image::setTo(const std::string& resName)
 void gui::Image::render()
 {
 	std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID);
-	bmp->drawScaled(bmp->rect(), {{0,0}, getScreenSize()});
+	bmp->drawScaled(bmp->rect(), {{0,0}, getScreenSize().floor()});
 }
 

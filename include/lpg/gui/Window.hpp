@@ -129,7 +129,8 @@ namespace gui {
 		al::Rect<> getScreenRectangle() const;
 
 		al::Rect<> getRelScreenRectangle() const;
-
+		
+		al::Vec2<> getSize() const;
 		void getScreenSize(float* w, float* h) const;
 		al::Vec2<> getScreenSize() const;
 

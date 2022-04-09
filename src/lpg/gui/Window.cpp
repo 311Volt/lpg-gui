@@ -72,7 +72,7 @@ void gui::Window::tick()
 void gui::Window::render()
 {
 	al::Rect<int> win = getRelScreenRectangle();
-	al::Vec2<float> ob1x = {0.9, 0};
+	al::Vec2<float> ob1x = {1.0, 0};
 	al::Rect<int> inner = {win.a + al::Vec2<int>(1,1), win.b - al::Vec2<int>(1,1)};
 
 	al::Color sh1 = al::Col::Black;
@@ -134,7 +134,6 @@ void gui::Window::draw()
 	if(!isPrerenderingEnabled) {
 		render();
 	} else {
-
 		if(needsRedraw) {
 			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()));
 			al::ScopedTargetBitmap tb(*winFrameBuffer);
@@ -144,6 +143,7 @@ void gui::Window::draw()
 		}
 
 		winFrameBuffer->draw({0, 0});
+
 	}
 	drawTime = al::GetTime() - tic;
 }
@@ -186,6 +186,7 @@ void gui::Window::onAdoption()
 void gui::Window::onRescale()
 {
 	needsRedraw = true;
+	resize(dims); //TODO replace this ugly hack... sometime in the far future
 }
 
 void gui::Window::onTitleChange()
@@ -279,7 +280,7 @@ void gui::Window::printDrawTimeSummary()
 		Window* win = idMap[id];
 		std::string ts = "not measurable";
 		if(win->drawTime != 0.0) {
-			ts = fmt::format("{:.2f} ms ({:.2f} Hz)", win->drawTime*1000.0, 1.0/win->drawTime);
+			ts = fmt::format("{:.2f} us ({:.2f} Hz)", win->drawTime*1000000.0, 1.0/win->drawTime);
 		}
 		fmt::print("  [#{}] -> {} \"{}\": {}\n", id, win->className(), win->getTitle(), ts);
 	}
@@ -387,11 +388,11 @@ float gui::Window::getHeight() const
 
 void gui::Window::resize(al::Vec2<> newDims)
 {
-	bool changed = dims!=newDims;
+	if(newDims.x < 0 || newDims.y < 0) {
+		throw std::runtime_error(fmt::format("cannot resize window to {}x{}", newDims.x, newDims.y));
+	}
 	dims = newDims;
-
-	if(winFrameBuffer && changed) {
-		//TODO speed this up?
+	if(winFrameBuffer && winFrameBuffer->size() != getScreenRectangle().size()) {
 		al::Vec2<> newss = getScreenSize();
 		winFrameBuffer = std::make_unique<al::Bitmap>(newss.x, newss.y);
 		needsRedraw = true;
@@ -428,6 +429,11 @@ al::Vec2<> gui::Window::getScreenSize() const
 {
 	auto r = getScreenRectangle();
 	return {r.width(), r.height()};
+}
+
+al::Vec2<> gui::Window::getSize() const
+{
+	return dims;
 }
 
 void gui::Window::getScreenSize(float* w, float* h) const

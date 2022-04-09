@@ -9,6 +9,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	txt.resize(this->dims);
 	cursor.resize(this->dims);
 
+	txt.setSizeMode(Text::SizeMode::AUTO);
 	txt.setAlignment(Alignment::LEFT_CENTER);
 	txt.setPos({4,0});
 	addChild(txt);
@@ -20,7 +21,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	buffer = U"Sample Text";
 	updateText();
 	
-	cursor.setText(U"|");
+	cursor.setText("|");
 	cursor.visible = false;
 	
 	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, &TextBox::onKeyChar);
@@ -37,7 +38,7 @@ void gui::TextBox::updateText()
 	auto cut = font->calcCutoffPoint(sub, getScreenRectangle().width());
 	sub = sub.substr(0, cut);
 
-	txt.setTitle(al::UStr::EncodeToUTF8(sub));
+	txt.setText(al::UStr::EncodeToUTF8(sub));
 }
 
 void gui::TextBox::insertCharacter(int position, int32_t codepoint)
@@ -70,4 +71,11 @@ void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
 			insertCharacter(buffer.size(), ev.keyboard.unichar);
 		}
 	}
+}
+
+void gui::TextBox::render()
+{
+	al::CurrentDisplay().setClippingRectangle(getScreenRectangle());
+	Window::render();
+	al::CurrentDisplay().resetClippingRectangle();
 }

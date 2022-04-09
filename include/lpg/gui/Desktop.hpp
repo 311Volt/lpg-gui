@@ -27,7 +27,7 @@ namespace gui {
 		void onResizeEvent(const ALLEGRO_EVENT& ev);
 		void onKeyDown(const ALLEGRO_EVENT& ev);
 
-		std::optional<lpg::ResourceManager::ResourceID> rID;
+		std::optional<lpg::ResourceID> rID;
 	};
 }
 

@@ -24,6 +24,7 @@ gui::Slider::Slider(int x, int y, int w, int h)
 	maxValue(65535),
 	handleDragOffset(0)
 {
+	caption.setSizeMode(Text::SizeMode::AUTO);
 	setBgColor(al::Color::RGB(128,128,128));
 	setEdgeType(EdgeType::BEVELED_INWARD);
 	setRawValue(0);
@@ -114,7 +115,8 @@ void gui::Slider::setRawValue(uint16_t v)
 		return;
 	}
 	value = v;
-	caption.setTitle(fmt::format("{}",value));
+	auto cText = fmt::format("{}",value);
+	caption.setText(cText);
 }
 
 void gui::Slider::setValueFunction(ValueFn valueFn)

@@ -6,6 +6,7 @@
 #include <lpg/gui/gui.hpp>
 #include <lpg/util/Log.hpp>
 
+#include <fstream>
 #include <iostream>
 #include <cmath>
 
@@ -29,23 +30,23 @@ int main1()
 	win.give(std::make_unique<gui::TitleBar>());
 
 	gui::Text close(10, 30, 100, 40);
-	close.setText(U"Press ESC §h00FF00 to exit");
+	close.setText("Press ESC §h00FF00 to exit");
 
 	gui::Text scaleInfo(10, 50, 100, 40);
-	scaleInfo.setText(U"Scale: 1.00");
+	scaleInfo.setText("Scale: 1.00");
 
 	gui::Button upscale(70, 30, 20, 80);
 	upscale.setTitle("Scale+");
 	upscale.setCallback([&](){
 		gui::Window::SetEnvScale(gui::Window::GetEnvScale() * 1.2);
-		scaleInfo.setTitle(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
+		scaleInfo.setText(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
 	});
 
 	gui::Button downscale(70, 30, 20, 115);
 	downscale.setTitle("Scale-");
 	downscale.setCallback([&](){
 		gui::Window::SetEnvScale(gui::Window::GetEnvScale() / 1.2);
-		scaleInfo.setTitle(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
+		scaleInfo.setText(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
 	});
 
 	gui::Image stealie("SVGTest", 50, 150);
@@ -68,6 +69,19 @@ int main1()
 	win.addChild(stealie);
 	win.addChild(slider);
 	win.addChild(tb);
+	
+	gui::Window dzi00b(290, 200);
+	gui::Text dziub(10, 10, 280, 190);
+	al::Config dziubCfg("dziub/default.ini");
+	gui::Window::RM.loadFromConfig(dziubCfg);
+
+	
+	std::ifstream msgfile("dziub/message.txt");
+	std::string dmsg {std::istreambuf_iterator<char>(msgfile), std::istreambuf_iterator<char>()};
+	
+	dzi00b.addChild(dziub);
+	dziub.setText(dmsg);
+	desk.addChild(dzi00b);
 
 	desk.mainLoop();
 

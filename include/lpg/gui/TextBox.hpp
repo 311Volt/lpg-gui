@@ -26,6 +26,8 @@ namespace gui {
 		
 		void onKeyChar(const ALLEGRO_EVENT& ev);
 		void onMouseDown(const ALLEGRO_EVENT& ev);
+
+		virtual void render() override;
 	};
 }
 
