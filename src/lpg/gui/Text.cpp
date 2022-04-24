@@ -251,7 +251,6 @@ void gui::Text::buildRenderChunkList()
 			state.u8text += al::UStr::EncodeToUTF8(std::u32string_view(buffer).substr(i,1));
 			x += chrWidth;
 		}
-		fmt::print("\n");
 	}
 	if(state.u8text.size()) {
 		writeChunk();

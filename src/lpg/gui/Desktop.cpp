@@ -26,6 +26,8 @@ void gui::Desktop::setWallpaper(const std::string& resName)
 
 void gui::Desktop::render()
 {
+	Window::render();
+
 	if(rID.has_value()) {
 		std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID.value());
 		bmp->drawScaled(bmp->rect(), {{0,0}, al::CurrentDisplay().size()});
@@ -42,7 +44,6 @@ void gui::Desktop::mainLoop()
 	eq.registerSource(al::mouse::GetEventSource());
 	eq.registerSource(al::CurrentDisplay().eventSource());
 	while(!exitFlag) {
-
 		while(!eq.empty()) {
 			ALLEGRO_EVENT ev = eq.pop();
 			handleEvent(ev);

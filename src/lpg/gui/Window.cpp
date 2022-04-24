@@ -222,9 +222,10 @@ void gui::Window::handleEvent(const ALLEGRO_EVENT& ev)
 		eventHandlers[ev.type](ev);
 	}
 	for(auto& childID: children) {
-		if(propagatedEvents.count(ev.type)) {
+		//TODO !!!FIX THIS AND ENABLE THIS AGAIN!!!
+		//if(propagatedEvents.count(ev.type)) {
 			GetWindowByID(childID)->handleEvent(ev);
-		}
+		//}
 	}
 }
 
