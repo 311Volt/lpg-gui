@@ -10,7 +10,7 @@ namespace gui {
 	public:
                 Checkbox(float x, float y);
                 Checkbox(float x, float y, float w, float h);
-                ~Checkbox();
+                virtual ~Checkbox();
 
                 virtual std::string_view className() {return "Checkbox";};
 

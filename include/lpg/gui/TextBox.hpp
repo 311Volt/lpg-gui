@@ -10,6 +10,7 @@ namespace gui {
 	class TextBox: public Window {
 	public:
 		TextBox(int x, int y, int w, int h);
+		virtual ~TextBox() {}
 		
 		std::string getText();
 		void setText(const std::string_view txt);

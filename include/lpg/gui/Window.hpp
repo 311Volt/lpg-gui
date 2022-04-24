@@ -28,7 +28,7 @@ namespace gui {
 	public:
 		Window(float width, float height, float x, float y);
 		Window(float width, float height);
-		~Window();
+		virtual ~Window();
 
 		virtual std::string_view className() {return "Window";};
 

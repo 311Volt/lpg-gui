@@ -11,7 +11,7 @@ namespace gui {
 	class TitleBar : public Window {
 	public:
 		TitleBar();
-		~TitleBar();
+		virtual ~TitleBar();
 
 		virtual std::string_view className() {return "TitleBar";};
 

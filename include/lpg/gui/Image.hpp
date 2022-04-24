@@ -11,6 +11,7 @@ namespace gui {
 	class Image: public Window {
 	public:
 		Image(const std::string& resName, float x, float y);
+		virtual ~Image() {}
 
 		virtual std::string_view className() {return "Image";};
 

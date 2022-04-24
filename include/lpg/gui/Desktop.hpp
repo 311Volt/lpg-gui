@@ -16,7 +16,7 @@ namespace gui {
 	class Desktop : public Window {
 	public:
 		Desktop();
-		~Desktop();
+		virtual ~Desktop();
 
 		virtual std::string_view className() {return "Desktop";};
 
