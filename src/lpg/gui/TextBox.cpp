@@ -56,6 +56,16 @@ void gui::TextBox::deleteCharacter(int position)
 	
 }
 
+std::string gui::TextBox::getText()
+{
+	return al::UStr::EncodeToUTF8(buffer);
+}
+void gui::TextBox::setText(const std::string_view txt)
+{
+	buffer = al::UStr::DecodeToUTF32(txt);
+	updateText();
+}
+
 void gui::TextBox::onMouseDown(const ALLEGRO_EVENT& ev)
 {
 	focused = IsClickEvent(ev, MouseBtn::LEFT, getScreenRectangle());

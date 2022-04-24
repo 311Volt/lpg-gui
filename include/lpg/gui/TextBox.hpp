@@ -11,6 +11,9 @@ namespace gui {
 	public:
 		TextBox(int x, int y, int w, int h);
 		
+		std::string getText();
+		void setText(const std::string_view txt);
+		
 		virtual std::string_view className() {return "TextBox";};
 	private:
 		std::u32string buffer;
@@ -20,6 +23,8 @@ namespace gui {
 		Text cursor;
 		
 		void updateText();
+
+		
 
 		void insertCharacter(int position, int32_t codepoint);
 		void deleteCharacter(int position);
