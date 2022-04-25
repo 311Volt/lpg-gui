@@ -21,7 +21,7 @@ namespace gui {
 		using ValueFn = std::function<double(uint16_t)>;
 
 		Slider(int x, int y, int w, int h);
-		~Slider();
+		virtual ~Slider();
 
 		virtual std::string_view className() {return "Slider";};
 

@@ -17,7 +17,7 @@ namespace gui {
 	public:
 		Text();
 		Text(float x, float y, float w, float h);
-		~Text();
+		virtual ~Text();
 
 		virtual std::string_view className() {return "Text";};
 

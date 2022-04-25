@@ -10,6 +10,10 @@ namespace gui {
 	class TextBox: public Window {
 	public:
 		TextBox(int x, int y, int w, int h);
+		virtual ~TextBox() {}
+		
+		std::string getText();
+		void setText(const std::string_view txt);
 		
 		virtual std::string_view className() {return "TextBox";};
 	private:
@@ -20,6 +24,8 @@ namespace gui {
 		Text cursor;
 		
 		void updateText();
+
+		
 
 		void insertCharacter(int position, int32_t codepoint);
 		void deleteCharacter(int position);

@@ -39,7 +39,6 @@ void gui::Button::setTrigger(std::pair<Button::State,Button::State> trigger)
 
 void gui::Button::onTitleChange()
 {
-
 	caption.setText(getTitle());
 }
 

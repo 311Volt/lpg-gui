@@ -14,6 +14,7 @@ namespace gui {
 		using CallbackT = std::function<void(void)>;
 		Button(float w, float h, float x, float y, CallbackT callback);
 		Button(float w, float h, float x, float y);
+		virtual ~Button() {}
 
 		virtual std::string_view className() {return "Button";};
 
