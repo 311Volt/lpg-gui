@@ -195,7 +195,7 @@ void gui::Text::buildRenderChunkList()
 
 	uint32_t currentLineHeight = 0;
 
-	auto writeChunk = [&](){
+	const auto writeChunk = [&](){
 		state.textDimensions = RM.get<al::Font>(state.rID)->getTextDimensions(state.u8text);
 		renderChunks.push_back(state);
 		state.u8text = "";
@@ -207,10 +207,10 @@ void gui::Text::buildRenderChunkList()
 		if(buffer[i] == TXT_FMT_CHAR) {
 			auto tok = tryParseToken(std::u32string_view(buffer).substr(i));
 			writeChunk();
-
 			if(!tok.has_value()) {
 				continue;
 			}
+			
 			if(const al::Color* col = std::get_if<al::Color>(&tok->dat)) {
 				state.color = *col;
 			}
