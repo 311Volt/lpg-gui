@@ -9,6 +9,8 @@ TODO:
 	- Window::getScreenSize -> Window::getSizeOnScreen
 	- add ctor for Text that defaults to size=(ScreenW,ScreenH) for auto size mode
 	- change Point to Vec2 where appropriate
+	- Window::addChildren
+	- pick a consistent order of x,y,w,h in window ctors
 	- add a version of Window::give that takes a raw pointer
 	- check everything for const correctness
 	- the name onMouseMove() in some gui classes might be misleading (bc of reg/del in callbacks)
