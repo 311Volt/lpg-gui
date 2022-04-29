@@ -17,7 +17,7 @@ gui::Text::Text(float x, float y, float w, float h)
 	setTitle("");
 	enablePrerendering();
 	
-	setBgColor(al::Color::RGBA(0,0,0,0));
+	setBgColor(al::RGBA(0,0,0,0));
 	setEdgeType(EdgeType::NONE);
 }
 
@@ -136,7 +136,7 @@ std::optional<gui::Text::FmtToken> tryParseHexColorToken(const std::u32string_vi
 	if(!colCode.has_value()) {
 		return std::nullopt;
 	}
-	return gui::Text::FmtToken{al::Color::U32_RGB(colCode.value()), 6+2};
+	return gui::Text::FmtToken{al::U32_RGB(colCode.value()), 6+2};
 }
 
 
@@ -153,7 +153,7 @@ std::optional<gui::Text::FmtToken> tryParseShortHexColorToken(const std::u32stri
 		((v & 0x0F0) << 8) +
 		((v & 0x00F) << 4)
 	);
-	return gui::Text::FmtToken{al::Color::U32_RGB(fullColCode), 3+2};
+	return gui::Text::FmtToken{al::U32_RGB(fullColCode), 3+2};
 }
 
 

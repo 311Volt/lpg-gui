@@ -25,7 +25,7 @@ gui::Slider::Slider(int x, int y, int w, int h)
 	handleDragOffset(0)
 {
 	caption.setSizeMode(Text::SizeMode::AUTO);
-	setBgColor(al::Color::RGB(128,128,128));
+	setBgColor(al::RGB(128,128,128));
 	setEdgeType(EdgeType::BEVELED_INWARD);
 	setRawValue(0);
 

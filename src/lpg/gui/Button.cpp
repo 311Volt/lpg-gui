@@ -61,7 +61,7 @@ void gui::Button::updateAppearance()
 {
 	edgeType = (state==State::DOWN) ? EdgeType::BEVELED_INWARD : EdgeType::BEVELED;
 	caption.setPos((state==State::DOWN) ? al::Vec2<>{1.0f,1.0f} : al::Vec2<>{0.0f,0.0f});
-	bgColor = ((state==State::HOVER) ? al::Color::RGB(192,192,224) : al::Color::RGB(192,192,192));
+	bgColor = ((state==State::HOVER) ? al::RGB(192,192,224) : al::RGB(192,192,192));
 	needsRedraw = true;
 }
 

@@ -17,8 +17,8 @@ gui::Window::Window(float width, float height, float x, float y)
 	resize(width, height);
 	setPos({x, y});
 
-	textColor = al::Color::RGB(0,0,0);
-	bgColor = al::Color::RGB(192,192,192);
+	textColor = al::RGB(0,0,0);
+	bgColor = al::RGB(192,192,192);
 	edgeType = EdgeType::BEVELED;
 	alignment = Alignment::LEFT_TOP;
 
@@ -75,10 +75,10 @@ void gui::Window::render()
 	al::Vec2<float> ob1x = {1.0, 0};
 	al::Rect<int> inner = {win.a + al::Vec2<int>(1,1), win.b - al::Vec2<int>(1,1)};
 
-	al::Color sh1 = al::Col::Black;
-	al::Color sh2 = al::Color::PremulRGBA(0,0,0,86);
+	al::Color sh1 = al::Black;
+	al::Color sh2 = al::PremulRGBA(0,0,0,86);
 	al::Color sh3 = bgColor;
-	al::Color sh4 = al::Col::White;
+	al::Color sh4 = al::White;
 
 	al::DrawFilledRectangle(win, bgColor);
 	if(edgeType == EdgeType::REGULAR) {
@@ -137,7 +137,7 @@ void gui::Window::draw()
 		if(needsRedraw) {
 			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()));
 			al::ScopedTargetBitmap tb(*winFrameBuffer);
-			al::CurrentDisplay().clearToColor(al::Color::RGBA(0,0,0,0));
+			al::TargetBitmap.clearToColor(al::RGBA(0,0,0,0));
 			render();
 			needsRedraw = false;
 		}

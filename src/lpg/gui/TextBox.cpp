@@ -28,7 +28,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TextBox::onMouseDown);
 	
 	setEdgeType(EdgeType::BEVELED_INWARD);
-	setBgColor(al::Color::RGB(255,255,255));
+	setBgColor(al::RGB(255,255,255));
 }
 
 void gui::TextBox::updateText()
@@ -69,7 +69,7 @@ void gui::TextBox::setText(const std::string_view txt)
 void gui::TextBox::onMouseDown(const ALLEGRO_EVENT& ev)
 {
 	focused = IsClickEvent(ev, MouseBtn::LEFT, getScreenRectangle());
-	setBgColor(al::Color::RGB(255-int(focused)*40,255,255));
+	setBgColor(al::RGB(255-int(focused)*40,255,255));
 }
 
 void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
@@ -85,7 +85,7 @@ void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
 
 void gui::TextBox::render()
 {
-	al::CurrentDisplay().setClippingRectangle(getScreenRectangle());
+	al::TargetBitmap.setClippingRectangle(getScreenRectangle());
 	Window::render();
-	al::CurrentDisplay().resetClippingRectangle();
+	al::TargetBitmap.resetClippingRectangle();
 }

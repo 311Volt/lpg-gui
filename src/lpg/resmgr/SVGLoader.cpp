@@ -51,7 +51,7 @@ al::Bitmap* lpg::SVGLoader::createObject()
 	}
 	
 	std::unique_ptr<al::Bitmap> ret = std::make_unique<al::Bitmap>(targetWidth, targetHeight);
-	ret->clearToColor(al::Color::RGBA(0,0,0,0));
+	ret->clearToColor(al::RGBA(0,0,0,0));
 	{
 		al::BitmapLockedRegion lr(*ret, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY);
 
