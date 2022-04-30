@@ -18,6 +18,8 @@ endif()
 include_directories("include")
 include_directories("deps/include")
 include_directories("axxegro/include")
+include_directories("axxegro/fmt/include")
+include_directories("lunasvg/include")
 
 file(GLOB_RECURSE lpg_gui_sources "src/*.cpp")
 
@@ -28,8 +30,7 @@ add_library(lpg_gui STATIC ${lpg_gui_sources})
 
 # set(CMAKE_FIND_DEBUG_MODE TRUE)
 
-find_library(LIBFMT fmt ${LPG_GUI_DEPS_LIB})
-find_library(LIBLUNASVG lunasvg ${LPG_GUI_DEPS_LIB})
+# find_library(LIBFMT fmt ${LPG_GUI_DEPS_LIB})
 
 find_library(ALLEGRO_CORE "allegro" ${LPG_GUI_DEPS_LIB})
 find_library(ALLEGRO_MAIN "allegro_main" ${LPG_GUI_DEPS_LIB})
@@ -45,9 +46,15 @@ find_library(ALLEGRO_PRIMITIVES "allegro_primitives" ${LPG_GUI_DEPS_LIB})
 find_library(ALLEGRO_TTF "allegro_ttf" ${LPG_GUI_DEPS_LIB})
 find_library(ALLEGRO_VIDEO "allegro_video" ${LPG_GUI_DEPS_LIB})
 
+
+OPTION(AXXEGRO_BUILD_EXAMPLES "" OFF)
+add_subdirectory("axxegro")
+add_subdirectory("lunasvg")
+
 set(LPG_GUI_LIBS 
-    ${LIBFMT}
-    ${LIBLUNASVG}
+    axxegro
+    fmt
+    lunasvg
     ${ALLEGRO_CORE} 
     ${ALLEGRO_MAIN} 
     ${ALLEGRO_ACODEC} 
@@ -64,17 +71,11 @@ set(LPG_GUI_LIBS
 )
 
 
-OPTION(AXXEGRO_BUILD_EXAMPLES "" OFF)
-add_subdirectory("axxegro")
 
-target_link_libraries(lpg_gui PUBLIC axxegro ${LPG_GUI_LIBS})
+target_link_libraries(lpg_gui PUBLIC ${LPG_GUI_LIBS})
 
 option(LPG_GUI_BUILD_EXAMPLES "Build example programs" ON)
 if(LPG_GUI_BUILD_EXAMPLES)
 	add_subdirectory("examples")
 endif()
 
-
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
