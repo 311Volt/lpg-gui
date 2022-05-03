@@ -19,6 +19,8 @@ include_directories("include")
 include_directories("deps/include")
 include_directories("axxegro/include")
 include_directories("axxegro/fmt/include")
+include_directories("axxegro/tcbspan/include")
+
 include_directories("lunasvg/include")
 
 file(GLOB_RECURSE lpg_gui_sources "src/*.cpp")
