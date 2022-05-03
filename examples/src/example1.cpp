@@ -70,6 +70,7 @@ int main1()
 	win.addChild(slider);
 	win.addChild(tb);
 	
+#ifdef WIN32
 	gui::Window dzi00b(290, 200);
 	gui::Text dziub(10, 10, 280, 190);
 	al::Config dziubCfg("dziub/default.ini");
@@ -82,6 +83,7 @@ int main1()
 	dzi00b.addChild(dziub);
 	dziub.setText(dmsg);
 	desk.addChild(dzi00b);
+#endif
 
 	desk.mainLoop();
 

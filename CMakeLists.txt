@@ -79,3 +79,4 @@ if(LPG_GUI_BUILD_EXAMPLES)
 	add_subdirectory("examples")
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
