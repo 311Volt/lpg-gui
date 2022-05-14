@@ -5,18 +5,11 @@
 #include <fmt/format.h>
 
 gui::Desktop::Desktop()
-	: Window(
-		al::CurrentDisplay.width(),
-		al::CurrentDisplay.height()
-	)
+	: Window(al::CurrentDisplay.size(), {0, 0})
 {
+	bgColor = al::Black;
 	registerEventHandler(ALLEGRO_EVENT_DISPLAY_RESIZE, &Desktop::onResizeEvent);
 	registerEventHandler(ALLEGRO_EVENT_KEY_DOWN, &Desktop::onKeyDown);
-}
-
-gui::Desktop::~Desktop()
-{
-
 }
 
 void gui::Desktop::setWallpaper(const std::string& resName)
@@ -30,7 +23,7 @@ void gui::Desktop::render()
 
 	if(rID.has_value()) {
 		std::shared_ptr<al::Bitmap> bmp = RM.get<al::Bitmap>(rID.value());
-		bmp->drawScaled(bmp->rect(), {{0,0}, al::CurrentDisplay.size()});
+		bmp->drawScaled(bmp->rect(), al::CurrentDisplay.rect());
 	}
 
 	drawChildren();
@@ -40,17 +33,16 @@ void gui::Desktop::render()
 void gui::Desktop::mainLoop()
 {
 	al::EventQueue eq;
-	eq.registerSource(al::keyb::GetEventSource());
-	eq.registerSource(al::mouse::GetEventSource());
+	eq.registerSource(al::GetKeyboardEventSource());
+	eq.registerSource(al::GetMouseEventSource());
 	eq.registerSource(al::CurrentDisplay.eventSource());
 	while(!exitFlag) {
 		while(!eq.empty()) {
-			ALLEGRO_EVENT ev = eq.pop();
-			handleEvent(ev);
+			handleEvent(eq.pop());
 		}
 		tick();
 
-		al::TargetBitmap.clearToColor(al::Color());
+		al::TargetBitmap.clearToColor(bgColor);
 		draw();
 		al::CurrentDisplay.flip();
 	}

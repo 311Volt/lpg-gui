@@ -9,26 +9,21 @@
 #include <allegro5/allegro_primitives.h>
 
 
-gui::Text::Text(float x, float y, float w, float h)
-	: Window(w, h, x, y)
+gui::Text::Text(al::Vec2<> size, al::Vec2<> pos, const std::string_view text)
+	: Window(size, pos)
 {
 	setSizeMode(SizeMode::NORMAL);
 	setFont("DefaultFont");
 	setTitle("");
+	setText(text);
 	enablePrerendering();
 	
 	setBgColor(al::RGBA(0,0,0,0));
-	setEdgeType(EdgeType::NONE);
+	setEdgeType(EDGE_NONE);
 }
 
 gui::Text::Text()
-	: Text(0, 0, 90, 20)
-{
-
-}
-
-
-gui::Text::~Text()
+	: Text({90,20}, POS_AUTO)
 {
 
 }

@@ -1,7 +1,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_native_dialog.h>
 
-#include <axxegro/display/Display.hpp>
+#include <axxegro/axxegro.hpp>
 
 #include <lpg/gui/gui.hpp>
 #include <lpg/util/Log.hpp>
@@ -10,15 +10,18 @@
 #include <iostream>
 #include <cmath>
 
+
 #include <fmt/format.h>
+
 int main1()
 {
+	std::set_terminate(al::Terminate);
 	al::FullInit();
 	al::Bitmap::SetNewBitmapFlags(ALLEGRO_MIPMAP | ALLEGRO_MIN_LINEAR | ALLEGRO_MAG_LINEAR);
 	lpg::Log.SetVerbosity(2);
 	al_set_new_display_flags(ALLEGRO_WINDOWED | ALLEGRO_RESIZABLE);
 	
-	al_create_display(1024, 768);
+	al::Display disp(800, 600);
 
 	al::Config resCfg("gui/default.ini");
 	
@@ -26,37 +29,33 @@ int main1()
 	gui::Window::RM.loadFromConfig(resCfg);
 
 	gui::Desktop desk;
-	gui::Window win(200, 350, 20, 20);
+	gui::Window win({200, 350}, {20, 20});
 	win.give(std::make_unique<gui::TitleBar>());
 
-	gui::Text close(10, 30, 100, 40);
-	close.setText("Press ESC §h00FF00 to exit");
+	gui::Text close({100, 40}, {10, 30}, "Press ESC §h00FF00 to exit");
+	gui::Text scaleInfo({100, 40}, {10, 50}, "Scale: 1.00");
 
-	gui::Text scaleInfo(10, 50, 100, 40);
-	scaleInfo.setText("Scale: 1.00");
-
-	gui::Button upscale(70, 30, 20, 80);
+	gui::Button upscale({70, 30}, {20, 80});
 	upscale.setTitle("Scale+");
 	upscale.setCallback([&](){
 		gui::Window::SetEnvScale(gui::Window::GetEnvScale() * 1.2);
 		scaleInfo.setText(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
 	});
 
-	gui::Button downscale(70, 30, 20, 115);
+	gui::Button downscale({70, 30}, {20, 115});
 	downscale.setTitle("Scale-");
 	downscale.setCallback([&](){
 		gui::Window::SetEnvScale(gui::Window::GetEnvScale() / 1.2);
 		scaleInfo.setText(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
 	});
 
-	gui::Image stealie("SVGTest", 50, 150);
+	gui::Image stealie("SVGTest", {50, 150});
 
-	gui::Slider slider(20, 250, 170, 30);
-	slider.setQuantization(16);
+	gui::Slider slider({170, 30}, {20, 250}, 16);
 
-	gui::Checkbox chk(10, 200);
+	gui::Checkbox chk({10, 200});
 	
-	gui::TextBox tb(10, 285, 170, 20);
+	gui::TextBox tb({170, 20}, {10, 285});
 
 	desk.addChild(win);
 	desk.setWallpaper("Wallpaper");
@@ -71,12 +70,11 @@ int main1()
 	win.addChild(tb);
 	
 #ifdef WIN32
-	gui::Window dzi00b(290, 200);
-	gui::Text dziub(10, 10, 280, 190);
+	gui::Window dzi00b({290, 200}, {1, 1});
+	gui::Text dziub({280, 190}, {10, 10});
 	al::Config dziubCfg("dziub/default.ini");
 	gui::Window::RM.loadFromConfig(dziubCfg);
 
-	
 	std::ifstream msgfile("dziub/message.txt");
 	std::string dmsg {std::istreambuf_iterator<char>(msgfile), std::istreambuf_iterator<char>()};
 	

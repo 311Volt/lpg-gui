@@ -1,34 +1,29 @@
 #include <lpg/gui/Checkbox.hpp>
 
-gui::Checkbox::Checkbox(float x, float y, float w, float h)
-	: Button(w, h, x, y, [this](){checked=!checked;}),
-	checkmark("Checkmark", 0, 0)
+gui::Checkbox::Checkbox(al::Vec2<> size, al::Coord<> pos)
+	: Button(size, pos, "", [this](){checked=!checked;}),
+	checkmark("Checkmark", {0, 0})
 {
 	setTitle("");
 	bgColor = al::RGB(255, 255, 255);
-	edgeType = EdgeType::BEVELED_INWARD;
+	edgeType = EDGE_BEVELED_INWARD;
 
 	checked = false;
 
-	checkmark.resize(w, h);
+	checkmark.resize(size);
 	addChild(checkmark);
 	updateAppearance();
 }
 
-gui::Checkbox::Checkbox(float x, float y)
-	: Checkbox(x, y, DefaultWidth, DefaultHeight)
+gui::Checkbox::Checkbox(al::Coord<> pos)
+	: Checkbox(DefaultSize, pos)
 {
 
 }
 
 void gui::Checkbox::updateAppearance()
 {
-	edgeType = EdgeType::BEVELED_INWARD; //to override Button::onDefault() behavior
+	edgeType = EDGE_BEVELED_INWARD; //to override Button::onDefault() behavior
 	bgColor = (state==State::DOWN) ? al::RGB(224,224,224) : al::RGB(255,255,255);
 	checkmark.visible = checked;
-}
-
-gui::Checkbox::~Checkbox()
-{
-
 }

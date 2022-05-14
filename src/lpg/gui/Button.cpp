@@ -3,28 +3,30 @@
 
 #include <lpg/util/Log.hpp>
 
-gui::Button::Button(float w, float h, float x, float y, CallbackT callback)
-	: Window(w, h, x, y),
-	callback(callback)
+gui::Button::Button(
+	al::Vec2<> size, 
+	al::Coord<> pos, 
+	const std::string_view text,
+	CallbackT callback
+)
+	: Window(size, pos, ALIGN_LEFT_TOP, EDGE_BEVELED),
+	callback(callback),
+	caption({1,1}, {0,0})
 {
-	setTitle("Button");
+	setTitle(std::string(text));
 	state = State::DEFAULT;
-	trigger = std::make_pair(State::DOWN, State::DEFAULT);
-	caption.setAlignment(Alignment::CENTER);
+	trigger = {State::DOWN, State::DEFAULT};
+
+	caption.setAlignment(ALIGN_CENTER);
 	caption.setPos({0,0});
 	caption.setSizeMode(Text::SizeMode::AUTO);
+	
 	clickPos = {0,0};
 	addChild(caption);
 
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &Button::onMouseDown);
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_UP, &Button::onMouseUp);
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Button::onMouseMove);
-}
-
-gui::Button::Button(float w, float h, float x, float y)
-	: Button(w, h, x, y, [](){})
-{
-
 }
 
 void gui::Button::setCallback(CallbackT callback)
@@ -59,7 +61,7 @@ gui::Button::State gui::Button::getState()
 
 void gui::Button::updateAppearance()
 {
-	edgeType = (state==State::DOWN) ? EdgeType::BEVELED_INWARD : EdgeType::BEVELED;
+	edgeType = (state==State::DOWN) ? EDGE_BEVELED_INWARD : EDGE_BEVELED;
 	caption.setPos((state==State::DOWN) ? al::Vec2<>{1.0f,1.0f} : al::Vec2<>{0.0f,0.0f});
 	bgColor = ((state==State::HOVER) ? al::RGB(192,192,224) : al::RGB(192,192,192));
 	needsRedraw = true;

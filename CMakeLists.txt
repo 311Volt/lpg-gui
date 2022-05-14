@@ -15,24 +15,18 @@ if(WIN32)
 	set(CMAKE_CXX_FLAGS "-m32 -Wall -Wextra -pedantic")
 endif()
 
-include_directories("include")
-include_directories("deps/include")
-include_directories("axxegro/include")
-include_directories("axxegro/fmt/include")
-include_directories("axxegro/tcbspan/include")
-
-include_directories("lunasvg/include")
-
 file(GLOB_RECURSE lpg_gui_sources "src/*.cpp")
-
 file(REAL_PATH "deps/lib" LPG_GUI_DEPS_LIB)
-
 add_library(lpg_gui STATIC ${lpg_gui_sources})
 
 
-# set(CMAKE_FIND_DEBUG_MODE TRUE)
+target_include_directories(lpg_gui PUBLIC "include")
+target_include_directories(lpg_gui PUBLIC "deps/include")
+target_include_directories(lpg_gui PUBLIC "axxegro/include")
+target_include_directories(lpg_gui PUBLIC "lunasvg/include")
 
-# find_library(LIBFMT fmt ${LPG_GUI_DEPS_LIB})
+# set(CMAKE_FIND_DEBUG_MODE TRUE)
+find_library(LIBFMT fmt ${LPG_GUI_DEPS_LIB})
 
 find_library(ALLEGRO_CORE "allegro" ${LPG_GUI_DEPS_LIB})
 find_library(ALLEGRO_MAIN "allegro_main" ${LPG_GUI_DEPS_LIB})
@@ -55,7 +49,7 @@ add_subdirectory("lunasvg")
 
 set(LPG_GUI_LIBS 
     axxegro
-    fmt
+    ${LIBFMT}
     lunasvg
     ${ALLEGRO_CORE} 
     ${ALLEGRO_MAIN} 

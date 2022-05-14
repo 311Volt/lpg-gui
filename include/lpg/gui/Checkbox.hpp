@@ -8,18 +8,15 @@
 namespace gui {
 	class Checkbox: public Button {
 	public:
-                Checkbox(float x, float y);
-                Checkbox(float x, float y, float w, float h);
-                virtual ~Checkbox();
+		Checkbox(al::Vec2<> size, al::Coord<> pos);
+		Checkbox(al::Coord<> pos);
+		LPG_WIN_CLS_NAME("Checkbox");
 
-                virtual std::string_view className() {return "Checkbox";};
+		bool isChecked() const;
 
-                bool isChecked() const;
-
-                static constexpr float DefaultWidth = 12;
-                static constexpr float DefaultHeight = 12;
+		static constexpr al::Vec2<> DefaultSize = {12, 12};
 	private:
-                virtual void updateAppearance() override;
+		virtual void updateAppearance() override;
 		Image checkmark;
 
 		bool checked;

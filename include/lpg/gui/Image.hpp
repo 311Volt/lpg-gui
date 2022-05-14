@@ -10,10 +10,9 @@
 namespace gui {
 	class Image: public Window {
 	public:
-		Image(const std::string& resName, float x, float y);
-		virtual ~Image() {}
+		Image(const std::string& resName, al::Coord<> pos);
 
-		virtual std::string_view className() {return "Image";};
+		LPG_WIN_CLS_NAME("Image");
 
 		void setTo(const std::string& resName);
 		virtual void render() override;

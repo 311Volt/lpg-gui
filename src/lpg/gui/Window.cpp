@@ -1,7 +1,7 @@
+#include "lpg/gui/TitleBar.hpp"
 #include <lpg/gui/Window.hpp>
 
 #include <algorithm>
-#include <allegro5/allegro_primitives.h>
 #include <fmt/format.h>
 
 #include <axxegro/Transform.hpp>
@@ -12,19 +12,23 @@ lpg::IntegerMap<uint32_t, gui::Window*> gui::Window::idMap;
 lpg::ResourceManager gui::Window::RM;
 float gui::Window::EnvScale = 1.0;
 
-gui::Window::Window(float width, float height, float x, float y)
+gui::Window::Window(al::Vec2<> size, al::Coord<> pos, Alignment align, EdgeType edge)
 {
-	resize(width, height);
-	setPos({x, y});
+	resize(size);
+	if(pos == POS_AUTO) {
+		setPos({5,5});
+	} else {
+		setPos(pos);
+	}
 
 	textColor = al::RGB(0,0,0);
 	bgColor = al::RGB(192,192,192);
-	edgeType = EdgeType::BEVELED;
-	alignment = Alignment::LEFT_TOP;
+	edgeType = edge;
+	alignment = align;
 
 	id = idMap.insert(this);
 
-	title = fmt::format("Unnamed window [#{}]", id);
+	title = fmt::format("Unnamed {} [#{}]", className(), id);
 	creationTime = al::GetTime();
 
 	zIndex = 0;
@@ -39,12 +43,6 @@ gui::Window::Window(float width, float height, float x, float y)
 	parent = nullptr;
 
 	drawTime = 0.00001;
-}
-
-gui::Window::Window(float width, float height)
-	: Window(width, height, 0, 0)
-{
-
 }
 
 gui::Window::~Window()
@@ -81,9 +79,12 @@ void gui::Window::render()
 	al::Color sh4 = al::White;
 
 	al::DrawFilledRectangle(win, bgColor);
-	if(edgeType == EdgeType::REGULAR) {
+
+	//fmt::print("{} {} {} {}: {:06X}\n", win.a.x, win.a.y, win.b.x, win.b.y, bgColor.rgb_u32());
+
+	if(edgeType == EDGE_REGULAR) {
 		al::DrawRectangle(win, sh4);
-	} else if(edgeType == EdgeType::BEVELED) {
+	} else if(edgeType == EDGE_BEVELED) {
 
 		al::DrawLine(win.bottomLeft(), win.bottomRight(), sh1);
 		al::DrawLine(win.topRight(), win.bottomRight(), sh1);
@@ -93,7 +94,7 @@ void gui::Window::render()
 
 		al::DrawLine(inner.bottomLeft(), inner.bottomRight(), sh2);
 		al::DrawLine(inner.topRight(), inner.bottomRight(), sh2);
-	} else if(edgeType == EdgeType::BEVELED_INWARD) {
+	} else if(edgeType == EDGE_BEVELED_INWARD) {
 		al::DrawLine(win.bottomLeft(), win.bottomRight(), sh4);
 		al::DrawLine(win.topRight(), win.bottomRight(), sh4);
 		
@@ -126,6 +127,7 @@ void gui::Window::draw()
 	double tic = al::GetTime();
 	al::Transform tr;
 	tr.translate(rp);
+	//fmt::print("translation = {}, {}\n", rp.x, rp.y);
 	al::ScopedTransform st(tr);
 
 	if(!visible)
@@ -191,7 +193,11 @@ void gui::Window::onRescale()
 
 void gui::Window::onTitleChange()
 {
-
+	for(auto& child: children) {
+		if(auto titleBar = dynamic_cast<TitleBar*>(GetWindowByID(child))) {
+			titleBar->setTitle(getTitle());
+		}
+	}
 }
 
 
@@ -294,7 +300,7 @@ void gui::Window::removeChild(uint32_t id)
 	removeChild(*idMap.at(id));
 }
 
-void gui::Window::give(std::unique_ptr<Window>&& child)
+void gui::Window::give(std::unique_ptr<Window> child)
 {
 	child->parent = this;
 	addChild(*child.get());
@@ -328,7 +334,7 @@ al::Coord<> gui::Window::getRelPos() const
 
 al::Coord<> gui::Window::getAbsPos() const
 {
-	return getRelPos() + (parent ? (parent->getAbsPos()) : al::Coord<>());
+	return getRelPos() + (parent ? (parent->getAbsPos()) : al::Coord<>(0, 0));
 }
 
 al::Rect<> gui::Window::getRect() const
@@ -435,6 +441,15 @@ al::Vec2<> gui::Window::getScreenSize() const
 al::Vec2<> gui::Window::getSize() const
 {
 	return dims;
+}
+
+al::Vec2<> gui::Window::getParentSize() const
+{
+	if(parent) {
+		return parent->getSize();
+	} else {
+		return al::CurrentDisplay.size();
+	}
 }
 
 void gui::Window::getScreenSize(float* w, float* h) const

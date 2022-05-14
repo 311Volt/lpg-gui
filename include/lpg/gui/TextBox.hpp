@@ -9,13 +9,12 @@
 namespace gui {
 	class TextBox: public Window {
 	public:
-		TextBox(int x, int y, int w, int h);
-		virtual ~TextBox() {}
+		TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initialText = "");
 		
 		std::string getText();
 		void setText(const std::string_view txt);
 		
-		virtual std::string_view className() {return "TextBox";};
+		LPG_WIN_CLS_NAME("TextBox");
 	private:
 		std::u32string buffer;
 		int viewPos;
@@ -24,8 +23,6 @@ namespace gui {
 		Text cursor;
 		
 		void updateText();
-
-		
 
 		void insertCharacter(int position, int32_t codepoint);
 		void deleteCharacter(int position);

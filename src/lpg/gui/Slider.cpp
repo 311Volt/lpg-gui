@@ -17,16 +17,17 @@ void gui::SliderButton::onDown()
 
 }
 
-gui::Slider::Slider(int x, int y, int w, int h)
-	: Window(w,h,x,y),
+gui::Slider::Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant)
+	: Window(size, pos, ALIGN_LEFT_TOP, EDGE_BEVELED_INWARD),
 	valueFn([](uint16_t v){return v;}),
-	handle(w, h, 0, 0),
+	handle(size, {0,0}),
 	maxValue(65535),
 	handleDragOffset(0)
 {
 	caption.setSizeMode(Text::SizeMode::AUTO);
+	setQuantization(quant);
 	setBgColor(al::RGB(128,128,128));
-	setEdgeType(EdgeType::BEVELED_INWARD);
+	setEdgeType(EDGE_BEVELED_INWARD);
 	setRawValue(0);
 
 	if(isVertical()) {
@@ -43,15 +44,11 @@ gui::Slider::Slider(int x, int y, int w, int h)
 	});
 	handle.setTrigger(std::make_pair(Button::State::HOVER, Button::State::DOWN));
 	handle.setTitle("");
-	caption.setAlignment(Alignment::CENTER);
+	caption.setAlignment(ALIGN_CENTER);
 	addChild(handle);
 	addChild(caption);
 }
 
-gui::Slider::~Slider()
-{
-
-}
 
 void gui::Slider::onMouseMove(const ALLEGRO_EVENT& ev)
 {

@@ -16,9 +16,7 @@ namespace gui {
 	class Desktop : public Window {
 	public:
 		Desktop();
-		virtual ~Desktop();
-
-		virtual std::string_view className() {return "Desktop";};
+		LPG_WIN_CLS_NAME("Desktop");
 
 		virtual void render() override;
 		void mainLoop();

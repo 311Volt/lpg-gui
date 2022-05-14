@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-gui::Image::Image(const std::string& resName, float x, float y)
-	: Window(0, 0, x, y)
+gui::Image::Image(const std::string& resName, al::Coord<> pos)
+	: Window({1,1}, pos)
 {
 	setTo(resName);
 	setTitle("An image");

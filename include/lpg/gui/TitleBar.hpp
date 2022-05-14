@@ -11,9 +11,8 @@ namespace gui {
 	class TitleBar : public Window {
 	public:
 		TitleBar();
-		virtual ~TitleBar();
 
-		virtual std::string_view className() {return "TitleBar";};
+		LPG_WIN_CLS_NAME("TitleBar");
 
 		virtual void render() override;
 		virtual void onTitleChange() override;

@@ -2,13 +2,13 @@
 #include <lpg/gui/Mouse.hpp>
 
 gui::TitleBar::TitleBar()
-	: Window(48,18,1,1)
+	: Window({48,18},{1,1})
 {
-	setBgColor(al::RGB(0,0,192));
-	setEdgeType(EdgeType::NONE);
+	setBgColor(al::RGB(0,0,160));
+	setEdgeType(EDGE_NONE);
 
 	caption.setSizeMode(Text::SizeMode::AUTO);
-	caption.setAlignment(Alignment::LEFT_CENTER);
+	caption.setAlignment(ALIGN_LEFT_CENTER);
 	caption.setTextColor(al::RGB(255,255,255));
 	caption.setPos({4,1});
 	addChild(caption);
@@ -17,10 +17,6 @@ gui::TitleBar::TitleBar()
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_UP, &TitleBar::onMouseUp);
 }
 
-gui::TitleBar::~TitleBar()
-{
-
-}
 
 void gui::TitleBar::onMouseDown(const ALLEGRO_EVENT& ev)
 {

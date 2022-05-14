@@ -16,10 +16,9 @@ namespace gui {
 	class Text : public Window {
 	public:
 		Text();
-		Text(float x, float y, float w, float h);
-		virtual ~Text();
+		Text(al::Vec2<> size, al::Vec2<> pos, const std::string_view text = "");
 
-		virtual std::string_view className() {return "Text";};
+		LPG_WIN_CLS_NAME("Text");
 
 		void setFont(const std::string& resName);
 
@@ -29,7 +28,7 @@ namespace gui {
 
 		lpg::ResourceID getFontID();
 
-		constexpr static char32_t TXT_FMT_CHAR = 0x00A7;
+		constexpr static char32_t TXT_FMT_CHAR = 0x00A7; //section sign
 
 		enum class SizeMode: uint8_t {
 			NORMAL = 0,

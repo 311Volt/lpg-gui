@@ -1,5 +1,5 @@
-#ifndef LPG_GUI_BUTTON_H
-#define LPG_GUI_BUTTON_H
+#ifndef INCLUDE_LPG_GUI_BUTTON
+#define INCLUDE_LPG_GUI_BUTTON
 
 #include <axxegro/resources/Font.hpp>
 
@@ -12,11 +12,14 @@ namespace gui {
 	class Button : public Window {
 	public:
 		using CallbackT = std::function<void(void)>;
-		Button(float w, float h, float x, float y, CallbackT callback);
-		Button(float w, float h, float x, float y);
-		virtual ~Button() {}
+		Button(
+			al::Vec2<> size, 
+			al::Coord<> pos, 
+			const std::string_view text = "Button",
+			CallbackT callback = [](){}
+		);
 
-		virtual std::string_view className() {return "Button";};
+		LPG_WIN_CLS_NAME("Button");
 
 		void setCallback(CallbackT callback);
 		virtual void render() override;
@@ -53,4 +56,4 @@ namespace gui {
 	};
 }
 
-#endif // LPG_GUI_BUTTON_H
+#endif /* INCLUDE_LPG_GUI_BUTTON */

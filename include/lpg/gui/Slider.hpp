@@ -20,10 +20,8 @@ namespace gui {
 	public:
 		using ValueFn = std::function<double(uint16_t)>;
 
-		Slider(int x, int y, int w, int h);
-		virtual ~Slider();
-
-		virtual std::string_view className() {return "Slider";};
+		Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant = 16);
+		LPG_WIN_CLS_NAME("Slider");
 
 		void setQuantization(uint16_t newMaxValue);
 

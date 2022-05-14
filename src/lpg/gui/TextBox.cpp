@@ -3,14 +3,14 @@
 #include <algorithm>
 #include <axxegro/UStr.hpp>
 
-gui::TextBox::TextBox(int x, int y, int w, int h)
-	: Window(w, h, x, y)
+gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initialText)
+	: Window(size, pos)
 {
 	txt.resize(this->dims);
 	cursor.resize(this->dims);
 
 	txt.setSizeMode(Text::SizeMode::AUTO);
-	txt.setAlignment(Alignment::LEFT_CENTER);
+	txt.setAlignment(ALIGN_LEFT_CENTER);
 	txt.setPos({4,0});
 	addChild(txt);
 	addChild(cursor);
@@ -18,7 +18,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	viewPos = 0;
 	cursorPos = 0;
 
-	buffer = U"Sample Text";
+	buffer = al::UStr::DecodeToUTF32(initialText);
 	updateText();
 	
 	cursor.setText("|");
@@ -27,7 +27,7 @@ gui::TextBox::TextBox(int x, int y, int w, int h)
 	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, &TextBox::onKeyChar);
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TextBox::onMouseDown);
 	
-	setEdgeType(EdgeType::BEVELED_INWARD);
+	setEdgeType(EDGE_BEVELED_INWARD);
 	setBgColor(al::RGB(255,255,255));
 }
 

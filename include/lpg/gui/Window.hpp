@@ -1,5 +1,5 @@
-#ifndef LPG_GUI_WINDOW_H
-#define LPG_GUI_WINDOW_H
+#ifndef INCLUDE_LPG_GUI_WINDOW
+#define INCLUDE_LPG_GUI_WINDOW
 
 #include <allegro5/allegro.h>
 
@@ -24,33 +24,43 @@
 
 namespace gui {
 
+	constexpr al::Coord<float> POS_AUTO = {-1, -1};
+
 	class Window {
 	public:
-		Window(float width, float height, float x, float y);
-		Window(float width, float height);
-		virtual ~Window();
 
-		virtual std::string_view className() {return "Window";};
-
-		enum class EdgeType: uint8_t {
-			NONE = 0,
-			REGULAR = 1,
-			BEVELED = 2,
-			BEVELED_INWARD = 3
+	
+		enum EdgeType {
+			EDGE_NONE = 0,
+			EDGE_REGULAR = 1,
+			EDGE_BEVELED = 2,
+			EDGE_BEVELED_INWARD = 3
 		};
-		enum class Alignment: uint8_t {
+		enum Alignment {
 			/* upper 2 bits: 00=left, 01=center, 10=right
 			 * lower 2 bits: 00=top, 01=center, 10=bottom */
-			LEFT_TOP      = 0b0000,
-			LEFT_CENTER   = 0b0001,
-			LEFT_BOTTOM   = 0b0010,
-			CENTER_TOP    = 0b0100,
-			CENTER        = 0b0101,
-			CENTER_BOTTOM = 0b0110,
-			RIGHT_TOP     = 0b1000,
-			RIGHT_CENTER  = 0b1001,
-			RIGHT         = 0b1010
+			ALIGN_LEFT_TOP      = 0b0000,
+			ALIGN_LEFT_CENTER   = 0b0001,
+			ALIGN_LEFT_BOTTOM   = 0b0010,
+			ALIGN_CENTER_TOP    = 0b0100,
+			ALIGN_CENTER        = 0b0101,
+			ALIGN_CENTER_BOTTOM = 0b0110,
+			ALIGN_RIGHT_TOP     = 0b1000,
+			ALIGN_RIGHT_CENTER  = 0b1001,
+			ALIGN_RIGHT         = 0b1010
 		};
+
+		Window(
+			al::Vec2<> size, 
+			al::Coord<> pos = POS_AUTO, 
+			Alignment align = ALIGN_LEFT_TOP,
+			EdgeType edge = EDGE_BEVELED
+		);
+		virtual ~Window();
+
+		virtual std::string_view className() const {return "Window";};
+		#define LPG_WIN_CLS_NAME(name) virtual std::string_view className() const override {return name;}
+
 		using EventHandler = std::function<void(const ALLEGRO_EVENT&)>;
 
 
@@ -96,7 +106,7 @@ namespace gui {
 		void removeChild(Window& child);
 		void removeChild(uint32_t id);
 
-		void give(std::unique_ptr<Window>&& child);
+		void give(std::unique_ptr<Window> child);
 
 		void setZIndex(int n);
 		int getZIndex() const;
@@ -133,6 +143,8 @@ namespace gui {
 		al::Vec2<> getSize() const;
 		void getScreenSize(float* w, float* h) const;
 		al::Vec2<> getScreenSize() const;
+
+		al::Vec2<> getParentSize() const;
 
 		void setPos(const al::Coord<>& p);
 
@@ -211,4 +223,4 @@ namespace gui {
 	};
 }
 
-#endif // LPG_GUI_WINDOW_H
+#endif /* INCLUDE_LPG_GUI_WINDOW */
