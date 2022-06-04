@@ -6,262 +6,412 @@
 
 #include <fmt/format.h>
 
-#include <allegro5/allegro_primitives.h>
 
 
-gui::Text::Text(al::Vec2<> size, al::Vec2<> pos, const std::string_view text)
+
+gui::Text::Text(const al::Vec2<> size, const al::Vec2<> pos, const std::string_view text)
 	: Window(size, pos)
 {
-	setSizeMode(SizeMode::NORMAL);
-	setFont("DefaultFont");
-	setTitle("");
-	setText(text);
-	enablePrerendering();
-	
 	setBgColor(al::RGBA(0,0,0,0));
+	setDefaultFont("DefaultFont");
 	setEdgeType(EDGE_NONE);
+	enablePrerendering();
+	textAlignment = ALIGN_LEFT_TOP;
+	setText(text);
+	setPadding({3,3,3,3});
 }
 
 gui::Text::Text()
-	: Text({90,20}, POS_AUTO)
+	: Text({90,20}, {0,0})
 {
 
 }
 
-void gui::Text::setFont(const std::string& resName)
+gui::Text& gui::Text::setText(const std::string_view buffer)
 {
-	rID = RM.getIdOf(resName);
-}
-
-void gui::Text::onRescale()
-{
-	Window::onRescale();
+	this->buffer = al::UStr::DecodeToUTF32(buffer);
 	update();
+	return *this;
 }
 
-lpg::ResourceID gui::Text::getFontID()
+gui::Text& gui::Text::setDefaultFont(const std::string& resourceName)
 {
-	return rID;
+	defaultFontId = RM.getIdOf(resourceName);
+	return *this;
 }
 
-void gui::Text::update()
+std::string gui::Text::getText()
 {
-	if(sizeMode == SizeMode::AUTO && parent) {
-		resize(parent->getSize());
+	return al::UStr::EncodeToUTF8(buffer);
+}
+
+gui::Text& gui::Text::setPadding(const al::Rect<> padding)
+{
+	this->padding = padding;
+	return *this;
+}
+
+void gui::Text::resizeToFit()
+{
+	if(currentRenderChunks.size() == 0) {
+		resize({5,5});
 	}
-	buildRenderChunkList();
-	if(sizeMode == SizeMode::AUTO) {
-		autoResize();
-	}
-	needsRedraw = true;
+	resize(getSpan().size());
 }
-
-void gui::Text::autoResize()
+al::Rect<> gui::Text::getSpan() const
 {
-	if(renderChunks.size() == 0) {
-		return;
-	}
-	al::Rect<int> span = renderChunks[0].textDimensions;
-	for(auto& ch: renderChunks) {
-		span = span.makeUnion(ch.textDimensions);
-	}
-	
-	span.a -= al::Vec2<int>(1,1);
-	span.b += al::Vec2<int>(1,1);
+	al::Rect<> ret;
 
-	span.limit({2, 2});
-
-	this->resize(ToUnits(span.size()));
-}
-
-void gui::Text::onTitleChange()
-{
-	//update();
-}
-
-
-void gui::Text::setText(const std::string_view text)
-{
-	buffer = al::UStr::DecodeToUTF32(text);
-	update();
-}
-
-void gui::Text::setSizeMode(gui::Text::SizeMode mode)
-{
-	sizeMode = mode;
-	if(mode == SizeMode::AUTO) {
-		update();
-	}
-}
-
-
-int hexNum(char32_t c)
-{
-	if(c >= '0' && c <= '9') {
-		return c - '0';
-	} else if(c >= 'A' && c <= 'Z') {
-		return 10 + c - 'A';
-	} else if(c >= 'a' && c <= 'z') {
-		return 10 + c - 'a';
-	}
-	return -1;
-}
-
-std::optional<uint32_t> parseHexNumber(const std::u32string_view str, uint32_t len)
-{
-	uint32_t ret = 0, i;
-	for(i=0; i<str.size() && i<len; i++) {
-		auto k = hexNum(str[i]);
-		if(k >= 0) {
-			ret *= 0x10;
-			ret += k;
-		} else {
-			return std::nullopt;
+	if(currentRenderChunks.size()) {
+		ret = currentRenderChunks[0].region;
+		for(auto& ch: currentRenderChunks) {
+			ret = ret.makeUnion(ch.region);
 		}
-	}
-	if(i < len) {
-		return std::nullopt;
 	}
 	return ret;
 }
 
-std::optional<gui::Text::FmtToken> tryParseHexColorToken(const std::u32string_view cmd)
+void gui::Text::update()
 {
-	auto colCode = parseHexNumber(cmd, 6);
-	if(!colCode.has_value()) {
-		return std::nullopt;
-	}
-	return gui::Text::FmtToken{al::U32_RGB(colCode.value()), 6+2};
+	currentRenderChunks = buildRenderChunks(tokenize());
+	needsRedraw = true;
 }
 
-
-std::optional<gui::Text::FmtToken> tryParseShortHexColorToken(const std::u32string_view cmd)
+void gui::Text::onTitleChange()
 {
-	auto colCode = parseHexNumber(cmd, 3);
-	if(!colCode.has_value()) {
-		return std::nullopt;
-	}
-
-	auto v = colCode.value();
-	uint32_t fullColCode (
-		((v & 0xF00) << 12) +
-		((v & 0x0F0) << 8) +
-		((v & 0x00F) << 4)
-	);
-	return gui::Text::FmtToken{al::U32_RGB(fullColCode), 3+2};
+	update();
 }
 
-
-std::optional<gui::Text::FmtToken> tryParseResourceName(const std::u32string_view cmd)
+void gui::Text::onResize()
 {
-	auto quote = std::find(cmd.begin(), cmd.end(), '"');
-	std::string rName = al::UStr::EncodeToUTF8(std::u32string(cmd.begin(), quote));
-	return gui::Text::FmtToken{gui::Window::RM.getIdOf(rName), 3+uint32_t(quote-cmd.begin())};
+	update();
 }
-
-
-std::optional<gui::Text::FmtToken> gui::Text::tryParseToken(const std::u32string_view tok)
-{
-	if(tok[0] != TXT_FMT_CHAR || tok.size() < 2) {
-		return std::nullopt;
-	}
-	auto cmd = tok.at(1);
-	switch(cmd) {
-		case 'h': return tryParseHexColorToken(tok.substr(2));
-		case 's': return tryParseShortHexColorToken(tok.substr(2));
-		case '"': return tryParseResourceName(tok.substr(2));
-		case '0': return FmtToken{textColor, 2};
-		case 'z': return FmtToken{RM.getIdOf("DefaultFont"), 2};
-	}
-
-	return std::nullopt;
-}
-void gui::Text::buildRenderChunkList()
-{
-	renderChunks.clear();
-	RenderChunk state;
-	state.lineNumber = 0;
-	state.u8text = "";
-	state.pos = {0, 0};
-	state.color = textColor;
-	state.rID = rID;
-
-	int x = 0;
-
-	uint32_t currentLineHeight = 0;
-
-	const auto writeChunk = [&](){
-		state.textDimensions = RM.get<al::Font>(state.rID)->getTextDimensions(state.u8text);
-		renderChunks.push_back(state);
-		state.u8text = "";
-		state.pos.x = x;
-	};
-
-	const auto [scrW, scrH] = getScreenSize();
-	for(uint32_t i=0; i<buffer.size(); i++) {
-		if(buffer[i] == TXT_FMT_CHAR) {
-			auto tok = tryParseToken(std::u32string_view(buffer).substr(i));
-			writeChunk();
-			if(!tok.has_value()) {
-				continue;
-			}
-			
-			if(const al::Color* col = std::get_if<al::Color>(&tok->dat)) {
-				state.color = *col;
-			}
-			if(const lpg::ResourceID* rID = std::get_if<lpg::ResourceID>(&tok->dat)) {
-				state.rID = *rID;
-			}
-			
-			i += tok->length;
-			if(i > buffer.size()) {
-				break;
-			}
-		}
-
-		if(state.pos.y > scrH) {
-			break;
-		}
-		
-		auto font = RM.get<al::Font>(state.rID);
-		currentLineHeight = std::max(currentLineHeight, (decltype(currentLineHeight))font->getLineHeight());
-
-		int32_t nextChr = ALLEGRO_NO_KERNING;
-		if(i < buffer.size() - 1) {
-			nextChr = buffer[i+1];
-		}
-		int chrWidth = font->getGlyphAdvance(buffer[i], nextChr);
-
-
-		if(buffer[i] == '\n' || state.pos.x + chrWidth > scrW) {
-			//new line
-			writeChunk();
-
-			x = 0;
-			state.lineNumber++;
-			state.pos.x = 0;
-			state.pos.y += currentLineHeight;
-			currentLineHeight = 1;
-		} else {	
-			state.u8text += al::UStr::EncodeToUTF8(std::u32string_view(buffer).substr(i,1));
-			x += chrWidth;
-		}
-	}
-	if(state.u8text.size()) {
-		writeChunk();
-	}
-}
-
-
 
 void gui::Text::render()
 {
-	Window::render();
+	auto fonts = getFonts(currentRenderChunks);
 
-	for(const auto& ch: renderChunks) {
-		auto font = RM.get<al::Font>(ch.rID);
-		font->draw(ch.u8text, ch.color, ch.pos - ch.textDimensions.a);
+	for(const auto& chunk: currentRenderChunks) {
+		const auto& fon = fonts[chunk.fontId];
+		fon->draw(chunk.u8text, chunk.color, chunk.region.a);
 	}
 
-	drawChildren();
+	Window::drawChildren();
+}
+
+
+int hexNum(char x)
+{
+	x = std::tolower(x);
+	if(x >= 'a' && x <= 'f') {
+		return 10 + x - 'a';
+	} else if(x >= '0' && x <= '9') {
+		return x - '0';
+	} else {
+		return -1;
+	}
+}
+
+std::optional<uint32_t> hexValue(const std::u32string_view v, int minSize)
+{
+	if(v.size() < minSize) {
+		return std::nullopt;
+	}
+	uint32_t ret = 0;
+	for(auto& ch: v) {
+		if(ch > 0x7F) {
+			return std::nullopt;
+		}
+		auto n = hexNum(ch);
+		if(n < 0) {
+			return std::nullopt;
+		}
+		ret = ret*0x10 + n;
+	}
+	return ret;
+}
+
+gui::Text::Token TokHexColor(const std::u32string_view v)
+{
+	if(auto val = hexValue(v.substr(2,6), 6)) {
+		return {gui::Text::TokenType::COLOR_LONG, 8, al::U32_RGB(val.value())};
+	}
+	return {gui::Text::TokenType::TEXT, 8};
+}
+
+gui::Text::Token TokHexColorShort(const std::u32string_view v)
+{
+	if(auto val = hexValue(v.substr(2,3), 3)) {
+		uint32_t shortValue = val.value();
+		uint32_t realValue = 
+			((shortValue & 0x00F) << 4) +
+			((shortValue & 0x0F0) << 8) +
+			((shortValue & 0xF00) << 12)
+		;
+		return {gui::Text::TokenType::COLOR_LONG, 5, al::U32_RGB(realValue)};
+	}
+	return {gui::Text::TokenType::TEXT, 5};
+}
+
+gui::Text::Token TokFont(const std::u32string_view v)
+{
+	if(v.size() > 4 && v.at(2) == '"') {
+		auto nameBegin = v.begin()+3;
+		auto closingQuote = std::find(nameBegin, v.end(), '"');
+
+		if(closingQuote == v.end()) {  //refuse to parse the rest to prevent quadratic behavior 
+			return {gui::Text::TokenType::TEXT, v.size()};
+		}
+		
+		auto resourceName32 = v.substr(3, std::distance(nameBegin, closingQuote));
+		auto resourceName = al::UStr::EncodeToUTF8(resourceName32);
+		auto rID = gui::Window::RM.getIdOf(resourceName);
+
+		return {gui::Text::TokenType::FONT, (size_t)std::distance(v.begin(), closingQuote+1), rID};
+	}
+	return {gui::Text::TokenType::TEXT, 1};
+}
+
+gui::Text::Token gui::Text::parseToken(const std::u32string_view v)
+{
+#ifndef NDEBUG
+	if(v.size() == 0) {
+		throw std::invalid_argument("an empty view should never be passed here");
+	}
+#endif
+	// if v begins with the format character, try to parse the token
+	if(v[0] == TXT_FMT_CHAR && v.size() > 1) {
+		switch(v.at(1)) {
+			case 'h': return TokHexColor(v);
+			case 's': return TokHexColorShort(v);
+			case 'r': return TokFont(v);
+			case '0': return {TokenType::RESET_COLOR, 2, textColor};
+			case 'z': return {TokenType::RESET_FONT, 2, defaultFontId};
+			default: ;
+		}
+	}
+
+	// else, search for either the fmt char or the end of the buffer
+	// and treat everything up to that point as normal text
+	auto ch = std::find(v.begin(), v.end(), TXT_FMT_CHAR);
+	size_t npos = std::distance(v.begin(), ch);
+	return {TokenType::TEXT, npos};
+}
+
+std::vector<gui::Text::Token> gui::Text::tokenize()
+{
+	std::vector<gui::Text::Token> ret;
+	for(size_t i=0; i<buffer.size(); ) {
+		ret.push_back(parseToken(buffer.substr(i)));
+		i += std::max<size_t>(1, ret.back().length);
+	}
+	return ret;
+}
+
+
+al::Rect<> gui::Text::getPadding() const
+{
+	return padding;
+}
+
+al::Rect<> gui::Text::getTextRegion() const
+{
+	al::Rect<> r = {{0,0}, getSize()};
+	return {
+		r.a + padding.a,
+		r.b - padding.b
+	};
+}
+
+bool isspace32(char32_t c)
+{
+	if(c >= 128)
+		return false;
+	return std::isspace(c);
+}
+
+std::vector<gui::Text::RenderChunk> gui::Text::buildRenderChunksFor(
+	std::u32string_view txt, 
+	al::Color color, 
+	lpg::ResourceID fontId
+)
+{
+	std::vector<RenderChunk> ret;
+
+	while(txt.size()) {
+		auto nextWord = std::find_if(txt.begin(), txt.end(), isspace32);
+		while(nextWord != txt.end() && isspace32(*nextWord)) {
+			++nextWord;
+		}
+
+		auto nextWordOffset = std::distance(txt.begin(), nextWord);
+		std::u32string_view currWord = txt.substr(0, nextWordOffset);
+
+		RenderChunk ch;
+		ch.color = color;
+		ch.fontId = fontId;
+		ch.region = {-1, -1, 0, 0};
+		ch.u8text = al::UStr::EncodeToUTF8(currWord);
+
+		ret.push_back(ch);
+		txt = txt.substr(nextWordOffset);
+	}
+	return ret;
+}
+
+std::unordered_map<lpg::ResourceID, std::shared_ptr<al::Font>> gui::Text::getFonts(const std::vector<RenderChunk>& chunks)
+{
+	std::unordered_map<lpg::ResourceID, std::shared_ptr<al::Font>> ret;
+
+	for(auto& ch: chunks) {
+		if(ret.count(ch.fontId) == 0) {
+			ret[ch.fontId] = RM.get<al::Font>(ch.fontId);
+		}
+	}
+
+	return ret;
+}
+
+std::vector<gui::Text::LineRange> gui::Text::findLineRanges(const std::vector<RenderChunk>& chunks)
+{
+	std::vector<std::pair<size_t,size_t>> ret;
+	auto fonts = getFonts(chunks);
+	auto region = getTextRegion();
+
+	float currentWidth = 0.0;
+	std::pair<size_t, size_t> currentRange = {0,0};
+
+	bool update = true;
+
+	for(size_t i=0; i<chunks.size(); i++) {
+		const auto& ch = chunks[i];
+		currentRange.second = i;
+		int chunkWidth = ToUnits(fonts[ch.fontId]->getTextWidth(ch.u8text));
+		update = true;
+
+		if(chunkWidth > region.width()) {
+			ret.push_back({i, i+1});
+			update = false;
+			currentRange = {i+1, i+1};
+			currentWidth = 0.0;
+			continue;
+		}
+
+		currentWidth += chunkWidth;
+
+		if(currentWidth > region.width()) {
+			ret.push_back(currentRange);
+			currentWidth = chunkWidth;
+			currentRange.first = i;
+		}
+
+		auto lf = std::find(ch.u8text.begin(), ch.u8text.end(), '\n');
+		while(lf != ch.u8text.end()) {
+			ret.push_back({i,i});
+			update = false;
+			lf = std::find(lf+1, ch.u8text.end(), '\n');
+		}
+	}
+
+	if(update) {
+		currentRange.second = chunks.size();
+		ret.push_back(currentRange);
+	}
+	return ret;
+}
+
+void gui::Text::setChunkPositions(std::vector<RenderChunk>& chunks, const std::vector<LineRange>& lines)
+{
+	auto fonts = getFonts(chunks);
+
+	lpg::ResourceID currentFontId = chunks.at(0).fontId;
+
+	auto region = ToPixels(this->getTextRegion());
+	auto currPos = region.topLeft();
+
+	float yMax = region.a.y;
+
+	for(const auto& line: lines) {
+		int maxAscent = 0;
+		int maxDescent = 0;
+
+		int maxLineHeight = 0;
+		if(line.second - line.first == 0) {
+			maxLineHeight = fonts[currentFontId]->getLineHeight();
+		}
+
+		currPos.x = region.a.x;
+
+		//1st pass
+		for(size_t i=line.first; i<line.second; i++) {
+			const auto& ch = chunks[i];
+			const auto& fon = fonts[ch.fontId];
+
+			maxLineHeight = std::max<int>(maxLineHeight, fon->getLineHeight());
+			maxAscent = std::max<int>(maxAscent, fon->getAscent());
+			maxDescent = std::max<int>(maxDescent, fon->getDescent());
+		}
+
+		//2nd pass
+		for(size_t i=line.first; i<line.second; i++) {
+			auto& ch = chunks[i];
+			const auto& fon = fonts[ch.fontId];
+			currentFontId = ch.fontId;
+			auto ascent = fon->getAscent();
+			auto offset = currPos + al::Vec2<>(0, maxAscent-ascent-maxDescent);
+			ch.region = al::Rect<>::PosSize(offset, fon->getTextDimensions(ch.u8text).size());
+
+			currPos.x += fon->getTextWidth(ch.u8text);
+		}
+
+		//3rd pass: alignment_x
+		float xMax = chunks[line.first].region.b.x;
+		
+		for(size_t i=line.first; i<line.second; i++) {
+			const auto& ch = chunks[i];
+			xMax = std::max<float>(xMax, ch.region.b.x);
+			yMax = std::max<float>(yMax, ch.region.b.y);
+		}
+
+		float xOff = (region.b.x - xMax) * ((((int)textAlignment & 0b1100) >> 2) / 2.0);
+		for(size_t i=line.first; i<line.second; i++) {
+			chunks[i].region += al::Vec2<>(xOff, 0);
+		}
+
+		currPos.y += maxLineHeight;
+	}
+	
+	float yOff = (region.b.y - yMax) * (((int)textAlignment & 0b0011) / 2.0);
+	for(auto& ch: chunks) {
+		ch.region += al::Vec2<>(0, yOff);
+	}
+}
+
+std::vector<gui::Text::RenderChunk> gui::Text::buildRenderChunks(const std::vector<Token>& tokens)
+{
+	std::vector<RenderChunk> ret;
+	al::Color currentColor = this->textColor;
+	lpg::ResourceID currentFontID = defaultFontId;
+
+	size_t tPos = 0;
+	for(const auto& tok: tokens) {
+		const auto tokText = buffer.substr(tPos, tok.length);
+		tPos += tok.length;
+		if(std::holds_alternative<lpg::ResourceID>(tok.data)) {
+			currentFontID = std::get<lpg::ResourceID>(tok.data);
+		} else if(std::holds_alternative<al::Color>(tok.data)) {
+			currentColor = std::get<al::Color>(tok.data);
+		} else if(tok.type == TokenType::TEXT) {
+			auto v = buildRenderChunksFor(tokText, currentColor, currentFontID);
+			for(auto& ch: v) {
+				ret.push_back(ch);
+			}
+		}
+	}
+	if(ret.size()) {
+		auto lines = findLineRanges(ret);
+		setChunkPositions(ret, lines);
+	}
+
+	return ret;
 }

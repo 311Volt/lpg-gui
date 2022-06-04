@@ -32,7 +32,7 @@ int main1()
 	gui::Window win({200, 350}, {20, 20});
 	win.give(std::make_unique<gui::TitleBar>());
 
-	gui::Text close({100, 40}, {10, 30}, "Press ESC §h00FF00 to exit");
+	gui::Text close({200, 40}, {10, 30}, "Press ESC §h00FF00§r\"DefaultFont2\"to exit");
 	gui::Text scaleInfo({100, 40}, {10, 50}, "Scale: 1.00");
 
 	gui::Button upscale({70, 30}, {20, 80});

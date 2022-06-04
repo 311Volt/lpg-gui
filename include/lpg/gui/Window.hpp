@@ -47,7 +47,7 @@ namespace gui {
 			ALIGN_CENTER_BOTTOM = 0b0110,
 			ALIGN_RIGHT_TOP     = 0b1000,
 			ALIGN_RIGHT_CENTER  = 0b1001,
-			ALIGN_RIGHT         = 0b1010
+			ALIGN_RIGHT_BOTTOM  = 0b1010
 		};
 
 		Window(
@@ -70,6 +70,7 @@ namespace gui {
 		virtual void onAdoption();
 		virtual void onRescale();
 		virtual void onTitleChange();
+		virtual void onResize();
 
 		void beginRender();
 		void endRender();
@@ -114,6 +115,9 @@ namespace gui {
 		al::Coord<> getRelPos() const;
 		al::Coord<> getAbsPos() const;
 		al::Rect<> getRect() const;
+
+		static float ToPixels(float x);
+		static float ToUnits(float x);
 
 		static al::Coord<> ToPixels(const al::Coord<>& p);
 		static al::Coord<> ToUnits(const al::Coord<>& p);

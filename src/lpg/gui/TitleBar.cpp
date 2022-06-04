@@ -7,10 +7,12 @@ gui::TitleBar::TitleBar()
 	setBgColor(al::RGB(0,0,160));
 	setEdgeType(EDGE_NONE);
 
-	caption.setSizeMode(Text::SizeMode::AUTO);
-	caption.setAlignment(ALIGN_LEFT_CENTER);
+	//caption.setSizeMode(Text::SizeMode::AUTO);
+	caption.setPos({0,0});
+	caption.resize(getSize());
 	caption.setTextColor(al::RGB(255,255,255));
-	caption.setPos({4,1});
+	caption.setPadding({5,0,5,0});
+	caption.textAlignment = ALIGN_LEFT_CENTER;
 	addChild(caption);
 
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TitleBar::onMouseDown);
@@ -54,4 +56,5 @@ void gui::TitleBar::onAdoption()
 {
 	setTitle(parent->getTitle());
 	resize(parent->getWidth()-3, getHeight());
+	caption.resize(getSize());
 }

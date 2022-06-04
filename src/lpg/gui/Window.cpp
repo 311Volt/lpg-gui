@@ -200,6 +200,10 @@ void gui::Window::onTitleChange()
 	}
 }
 
+void gui::Window::onResize()
+{
+
+}
 
 void gui::Window::drawChildren()
 {
@@ -342,6 +346,15 @@ al::Rect<> gui::Window::getRect() const
 	return al::Rect(getRelPos(), getRelPos()+dims);
 }
 
+float gui::Window::ToPixels(float x)
+{
+	return x * GetEnvScale();
+}
+float gui::Window::ToUnits(float x)
+{
+	return x / GetEnvScale();
+}
+
 al::Coord<> gui::Window::ToPixels(const al::Coord<>& p)
 {
 	return p * GetEnvScale();
@@ -404,6 +417,7 @@ void gui::Window::resize(al::Vec2<> newDims)
 		winFrameBuffer = std::make_unique<al::Bitmap>(newss.x, newss.y);
 		needsRedraw = true;
 	}
+	onResize();
 }
 
 void gui::Window::resize(float w, float h)

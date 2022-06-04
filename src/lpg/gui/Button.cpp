@@ -19,7 +19,8 @@ gui::Button::Button(
 
 	caption.setAlignment(ALIGN_CENTER);
 	caption.setPos({0,0});
-	caption.setSizeMode(Text::SizeMode::AUTO);
+	caption.resize(getSize());
+	caption.textAlignment = ALIGN_CENTER;
 	
 	clickPos = {0,0};
 	addChild(caption);

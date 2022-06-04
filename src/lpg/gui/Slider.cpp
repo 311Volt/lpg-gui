@@ -24,7 +24,8 @@ gui::Slider::Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant)
 	maxValue(65535),
 	handleDragOffset(0)
 {
-	caption.setSizeMode(Text::SizeMode::AUTO);
+	caption.resize(getSize());
+	caption.textAlignment = ALIGN_CENTER;
 	setQuantization(quant);
 	setBgColor(al::RGB(128,128,128));
 	setEdgeType(EDGE_BEVELED_INWARD);

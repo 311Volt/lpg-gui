@@ -9,8 +9,8 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	txt.resize(this->dims);
 	cursor.resize(this->dims);
 
-	txt.setSizeMode(Text::SizeMode::AUTO);
-	txt.setAlignment(ALIGN_LEFT_CENTER);
+	txt.resize(getSize());
+	//txt.setAlignment(ALIGN_LEFT_CENTER);
 	txt.setPos({4,0});
 	addChild(txt);
 	addChild(cursor);
@@ -33,12 +33,13 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 
 void gui::TextBox::updateText()
 {
+	/*
 	auto font = RM.get<al::Font>(txt.getFontID());
 	auto sub = buffer.substr(viewPos);
 	auto cut = font->calcCutoffPoint(sub, getScreenRectangle().width());
 	sub = sub.substr(0, cut);
-
-	txt.setText(al::UStr::EncodeToUTF8(sub));
+	*/
+	txt.setText(al::UStr::EncodeToUTF8(buffer));
 }
 
 void gui::TextBox::insertCharacter(int position, int32_t codepoint)
