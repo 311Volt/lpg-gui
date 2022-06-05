@@ -1,6 +1,8 @@
 #ifndef LPG_GUI_DROPDOWNLIST_H
 #define LPG_GUI_DROPDOWNLIST_H
 
+#include <lpg/gui/Window.hpp>
+
 namespace gui {
 
 	class DropdownListElement: public Window {

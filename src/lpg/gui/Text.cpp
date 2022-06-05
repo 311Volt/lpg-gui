@@ -112,7 +112,7 @@ int hexNum(char x)
 	}
 }
 
-std::optional<uint32_t> hexValue(const std::u32string_view v, int minSize)
+std::optional<uint32_t> hexValue(const std::u32string_view v, unsigned minSize)
 {
 	if(v.size() < minSize) {
 		return std::nullopt;
@@ -272,52 +272,55 @@ std::unordered_map<lpg::ResourceID, std::shared_ptr<al::Font>> gui::Text::getFon
 	return ret;
 }
 
+std::vector<gui::Text::LineRange> IndicesToRanges(const std::vector<size_t>& v)
+{
+	if(!v.size()) {
+		return {};
+	}
+
+	std::vector<gui::Text::LineRange> ret;
+	size_t last = v[0];
+	size_t lastChange = 0;
+	for(size_t i=0; i<v.size(); i++) {
+		while(last < v[i]) {
+			ret.push_back({lastChange, i});
+			lastChange = i;
+			++last;
+		}
+	}
+	ret.push_back({lastChange, v.size()});
+	return ret;
+}
+
 std::vector<gui::Text::LineRange> gui::Text::findLineRanges(const std::vector<RenderChunk>& chunks)
 {
-	std::vector<std::pair<size_t,size_t>> ret;
+	std::vector<size_t> lineNumbers(chunks.size());
 	auto fonts = getFonts(chunks);
 	auto region = getTextRegion();
 
 	float currentWidth = 0.0;
-	std::pair<size_t, size_t> currentRange = {0,0};
 
-	bool update = true;
+	int lineNumber = 0;
 
 	for(size_t i=0; i<chunks.size(); i++) {
 		const auto& ch = chunks[i];
-		currentRange.second = i;
 		int chunkWidth = ToUnits(fonts[ch.fontId]->getTextWidth(ch.u8text));
-		update = true;
 
-		if(chunkWidth > region.width()) {
-			ret.push_back({i, i+1});
-			update = false;
-			currentRange = {i+1, i+1};
-			currentWidth = 0.0;
-			continue;
-		}
+		size_t numNewlines = std::count(ch.u8text.begin(), ch.u8text.end(), '\n');
 
 		currentWidth += chunkWidth;
-
 		if(currentWidth > region.width()) {
-			ret.push_back(currentRange);
-			currentWidth = chunkWidth;
-			currentRange.first = i;
+			currentWidth = std::min<float>(chunkWidth, region.width());
+			++lineNumber;
 		}
-
-		auto lf = std::find(ch.u8text.begin(), ch.u8text.end(), '\n');
-		while(lf != ch.u8text.end()) {
-			ret.push_back({i,i});
-			update = false;
-			lf = std::find(lf+1, ch.u8text.end(), '\n');
-		}
+		lineNumbers[i] = lineNumber;
+		lineNumber += numNewlines;
+	}
+	for(size_t i=0; i<lineNumbers.size(); i++) {
+		fmt::print("{} -> :{}\n", chunks[i].u8text, lineNumbers[i]);
 	}
 
-	if(update) {
-		currentRange.second = chunks.size();
-		ret.push_back(currentRange);
-	}
-	return ret;
+	return IndicesToRanges(lineNumbers);
 }
 
 void gui::Text::setChunkPositions(std::vector<RenderChunk>& chunks, const std::vector<LineRange>& lines)
@@ -411,6 +414,12 @@ std::vector<gui::Text::RenderChunk> gui::Text::buildRenderChunks(const std::vect
 	if(ret.size()) {
 		auto lines = findLineRanges(ret);
 		setChunkPositions(ret, lines);
+	}
+
+	for(auto& ch: ret) {
+		while(ch.u8text.size() && std::isspace(ch.u8text.back())) {
+			ch.u8text.pop_back();
+		}
 	}
 
 	return ret;

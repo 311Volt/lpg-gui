@@ -13,7 +13,7 @@
 
 #include <fmt/format.h>
 
-int main1()
+int main()
 {
 	std::set_terminate(al::Terminate);
 	al::FullInit();
@@ -33,7 +33,7 @@ int main1()
 	win.give(std::make_unique<gui::TitleBar>());
 
 	gui::Text close({200, 40}, {10, 30}, "Press ESC §h00FF00§r\"DefaultFont2\"to exit");
-	gui::Text scaleInfo({100, 40}, {10, 50}, "Scale: 1.00");
+	gui::Text scaleInfo({109, 90}, {10, 50}, "Scale: 1.00");
 
 	gui::Button upscale({70, 30}, {20, 80});
 	upscale.setTitle("Scale+");
@@ -50,11 +50,8 @@ int main1()
 	});
 
 	gui::Image stealie("SVGTest", {50, 150});
-
 	gui::Slider slider({170, 30}, {20, 250}, 16);
-
 	gui::Checkbox chk({10, 200});
-	
 	gui::TextBox tb({170, 20}, {10, 285});
 
 	desk.addChild(win);
@@ -88,13 +85,4 @@ int main1()
 	gui::Window::RM.releaseAllResources();
 
 	return 0;
-}
-
-int main()
-{
-	try {
-		return main1();
-	} catch(std::exception& e) {
-		al_show_native_message_box(NULL, "Error", "Unhandled exception: ", e.what(), "", ALLEGRO_MESSAGEBOX_ERROR);
-	}
 }

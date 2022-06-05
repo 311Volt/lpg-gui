@@ -10,8 +10,8 @@ gui::Button::Button(
 	CallbackT callback
 )
 	: Window(size, pos, ALIGN_LEFT_TOP, EDGE_BEVELED),
-	callback(callback),
-	caption({1,1}, {0,0})
+	caption({1,1}, {0,0}),
+	callback(callback)
 {
 	setTitle(std::string(text));
 	state = State::DEFAULT;
