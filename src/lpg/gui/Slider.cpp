@@ -25,7 +25,7 @@ gui::Slider::Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant)
 	handleDragOffset(0)
 {
 	caption.resize(getSize());
-	caption.textAlignment = ALIGN_CENTER;
+	caption.setTextAlignment(ALIGN_CENTER);
 	setQuantization(quant);
 	setBgColor(al::RGB(128,128,128));
 	setEdgeType(EDGE_BEVELED_INWARD);

@@ -13,14 +13,14 @@ gui::Button::Button(
 	caption({1,1}, {0,0}),
 	callback(callback)
 {
-	setTitle(std::string(text));
 	state = State::DEFAULT;
 	trigger = {State::DOWN, State::DEFAULT};
 
-	caption.setAlignment(ALIGN_CENTER);
+	//caption.setAlignment(ALIGN_CENTER);
 	caption.setPos({0,0});
 	caption.resize(getSize());
-	caption.textAlignment = ALIGN_CENTER;
+	caption.setTextAlignment(ALIGN_CENTER);
+	setTitle(std::string(text));
 	
 	clickPos = {0,0};
 	addChild(caption);

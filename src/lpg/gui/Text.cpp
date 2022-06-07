@@ -70,6 +70,15 @@ al::Rect<> gui::Text::getSpan() const
 	}
 	return ret;
 }
+void gui::Text::setTextAlignment(Alignment alignment)
+{
+	textAlignment = alignment;
+	update();
+}
+gui::Window::Alignment gui::Text::getTextAlignment()
+{
+	return textAlignment;
+}
 
 void gui::Text::update()
 {

@@ -10,7 +10,6 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	cursor.resize(this->dims);
 
 	txt.resize(getSize());
-	//txt.setAlignment(ALIGN_LEFT_CENTER);
 	txt.setPos({4,0});
 	addChild(txt);
 	addChild(cursor);
@@ -18,6 +17,8 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	viewPos = 0;
 	cursorPos = 0;
 
+	txt.setTextAlignment(ALIGN_LEFT_CENTER);
+	txt.setPadding({0,2,2,2});
 	buffer = al::ToUTF32(initialText);
 	updateText();
 	

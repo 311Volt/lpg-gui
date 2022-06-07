@@ -12,7 +12,7 @@ gui::TitleBar::TitleBar()
 	caption.resize(getSize());
 	caption.setTextColor(al::RGB(255,255,255));
 	caption.setPadding({5,0,5,0});
-	caption.textAlignment = ALIGN_LEFT_CENTER;
+	caption.setTextAlignment(ALIGN_LEFT_CENTER);
 	addChild(caption);
 
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TitleBar::onMouseDown);

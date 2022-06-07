@@ -1,5 +1,5 @@
-#ifndef INCLUDE_LPG_GUI_TEXT
-#define INCLUDE_LPG_GUI_TEXT
+#ifndef LPG_GUI_INCLUDE_LPG_GUI_TEXT
+#define LPG_GUI_INCLUDE_LPG_GUI_TEXT
 
 #include <lpg/gui/Window.hpp>
 
@@ -43,6 +43,9 @@ namespace gui {
 		al::Rect<> getTextRegion() const;
 		Text& setPadding(const al::Rect<> padding);
 
+		void setTextAlignment(Alignment alignment);
+		Alignment getTextAlignment();
+
 		virtual void onTitleChange() override;
 		virtual void render() override;
 		virtual void onResize() override;
@@ -70,9 +73,9 @@ namespace gui {
 			std::variant<al::Color, lpg::ResourceID, std::monostate> data = std::monostate();	
 		};
 		
-		Alignment textAlignment;
 		using LineRange = std::pair<size_t,size_t>;
 	private:
+		Alignment textAlignment;
 		void update();
 
 		Token parseToken(const std::u32string_view v);
@@ -92,4 +95,4 @@ namespace gui {
 	};
 }
 
-#endif /* INCLUDE_LPG_GUI_TEXT */
+#endif /* LPG_GUI_INCLUDE_LPG_GUI_TEXT */

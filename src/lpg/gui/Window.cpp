@@ -513,7 +513,6 @@ void gui::Window::normalizeChildrenZIndices()
 
 	std::vector<uint32_t> sorted;
 	for(auto& childId: children) {
-		fmt::print("child of #{}: #{}\n", id, childId);
 		sorted.push_back(childId);
 	}
 
