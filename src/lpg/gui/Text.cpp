@@ -12,6 +12,7 @@
 gui::Text::Text(const al::Vec2<> size, const al::Vec2<> pos, const std::string_view text)
 	: Window(size, pos)
 {
+	textColor = al::Black;
 	setBgColor(al::RGBA(0,0,0,0));
 	setDefaultFont("DefaultFont");
 	setEdgeType(EDGE_NONE);
@@ -78,6 +79,12 @@ void gui::Text::setTextAlignment(Alignment alignment)
 gui::Window::Alignment gui::Text::getTextAlignment()
 {
 	return textAlignment;
+}
+
+void gui::Text::setTextColor(al::Color color)
+{
+	textColor = color;
+	update();
 }
 
 void gui::Text::update()
@@ -313,17 +320,21 @@ std::vector<gui::Text::LineRange> gui::Text::findLineRanges(const std::vector<Re
 
 	for(size_t i=0; i<chunks.size(); i++) {
 		const auto& ch = chunks[i];
-		int chunkWidth = ToUnits(fonts[ch.fontId]->getTextWidth(ch.u8text));
+		int chunkWidth = fonts[ch.fontId]->getTextWidth(ch.u8text);
 
 		size_t numNewlines = std::count(ch.u8text.begin(), ch.u8text.end(), '\n');
 
 		currentWidth += chunkWidth;
 		if(currentWidth > region.width()) {
-			currentWidth = std::min<float>(chunkWidth, region.width());
+			currentWidth = std::min<float>(chunkWidth, ToPixels(region.width()));
 			++lineNumber;
 		}
 		lineNumbers[i] = lineNumber;
 		lineNumber += numNewlines;
+
+		if(numNewlines) {
+			currentWidth = 0.0;
+		}
 	}
 
 	return IndicesToRanges(lineNumbers);

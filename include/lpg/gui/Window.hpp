@@ -154,7 +154,6 @@ namespace gui {
 
 		void setPos(const al::Coord<>& p);
 
-		void setTextColor(al::Color color);
 		void setBgColor(al::Color color);
 		void setEdgeType(EdgeType type);
 
@@ -196,7 +195,6 @@ namespace gui {
 		Window* parent; //NULL for root
 
 		//appearance
-		al::Color textColor;
 		al::Color bgColor;
 		EdgeType edgeType;
 

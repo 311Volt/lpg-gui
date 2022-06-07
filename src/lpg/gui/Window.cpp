@@ -21,8 +21,7 @@ gui::Window::Window(al::Vec2<> size, al::Coord<> pos, Alignment align, EdgeType 
 	} else {
 		setPos(pos);
 	}
-
-	textColor = al::RGB(0,0,0);
+	
 	bgColor = al::RGB(192,192,192);
 	edgeType = edge;
 	alignment = align;
@@ -441,11 +440,6 @@ void gui::Window::setAlignment(Alignment alignment)
 	this->alignment = alignment;
 }
 
-
-void gui::Window::setTextColor(al::Color color)
-{
-	textColor = color;
-}
 
 void gui::Window::setBgColor(al::Color color)
 {

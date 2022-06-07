@@ -43,6 +43,8 @@ namespace gui {
 		al::Rect<> getTextRegion() const;
 		Text& setPadding(const al::Rect<> padding);
 
+		void setTextColor(al::Color color);
+
 		void setTextAlignment(Alignment alignment);
 		Alignment getTextAlignment();
 
@@ -89,6 +91,7 @@ namespace gui {
 		std::vector<LineRange> findLineRanges(const std::vector<RenderChunk>& chunks);
 		void setChunkPositions(std::vector<RenderChunk>& chunks, const std::vector<LineRange>& lines);
 
+		al::Color textColor;
 
 		std::vector<RenderChunk> currentRenderChunks;
 		std::u32string buffer;
