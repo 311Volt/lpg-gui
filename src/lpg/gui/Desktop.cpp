@@ -10,6 +10,33 @@ gui::Desktop::Desktop()
 	bgColor = al::Black;
 	registerEventHandler(ALLEGRO_EVENT_DISPLAY_RESIZE, &Desktop::onResizeEvent);
 	registerEventHandler(ALLEGRO_EVENT_KEY_DOWN, &Desktop::onKeyDown);
+
+	eventDispatcher.setEventTypeHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, [this](const ALLEGRO_EVENT& ev){
+		al::Coord<> mousePos(ev.mouse.x, ev.mouse.y);
+		std::vector<uint32_t> candidates;
+		for(auto& childId: children) {
+			Window* child = GetWindowByID(childId);
+			if(child && child->getScreenRectangle().contains(mousePos)) {
+				candidates.push_back(childId);
+			}
+		}
+
+		//TODO this is copied from Window.cpp (drawChildren) and inefficient (not that it matters here)
+		std::sort(candidates.begin(), candidates.end(), [](uint32_t l, uint32_t r){
+			int zl = GetWindowByID(l)->getZIndex();
+			int zr = GetWindowByID(r)->getZIndex();
+			if(zl != zr)
+				return zl > zr;
+			return l > r;
+		});
+
+		if(candidates.size()) {
+			Window* win = GetWindowByID(candidates.back());
+			win->handleEvent(ev);
+			win->setZIndex(9999999);
+		}
+		normalizeChildrenZIndices();
+	});
 }
 
 void gui::Desktop::setWallpaper(const std::string& resName)

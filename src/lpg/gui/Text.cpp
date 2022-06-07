@@ -29,7 +29,7 @@ gui::Text::Text()
 
 gui::Text& gui::Text::setText(const std::string_view buffer)
 {
-	this->buffer = al::UStr::DecodeToUTF32(buffer);
+	this->buffer = al::ToUTF32(buffer);
 	update();
 	return *this;
 }
@@ -42,7 +42,7 @@ gui::Text& gui::Text::setDefaultFont(const std::string& resourceName)
 
 std::string gui::Text::getText()
 {
-	return al::UStr::EncodeToUTF8(buffer);
+	return al::ToUTF8(buffer);
 }
 
 gui::Text& gui::Text::setPadding(const al::Rect<> padding)
@@ -164,7 +164,7 @@ gui::Text::Token TokFont(const std::u32string_view v)
 		}
 		
 		auto resourceName32 = v.substr(3, std::distance(nameBegin, closingQuote));
-		auto resourceName = al::UStr::EncodeToUTF8(resourceName32);
+		auto resourceName = al::ToUTF8(resourceName32);
 		auto rID = gui::Window::RM.getIdOf(resourceName);
 
 		return {gui::Text::TokenType::FONT, (size_t)std::distance(v.begin(), closingQuote+1), rID};
@@ -251,7 +251,7 @@ std::vector<gui::Text::RenderChunk> gui::Text::buildRenderChunksFor(
 		ch.color = color;
 		ch.fontId = fontId;
 		ch.region = {-1, -1, 0, 0};
-		ch.u8text = al::UStr::EncodeToUTF8(currWord);
+		ch.u8text = al::ToUTF8(currWord);
 
 		ret.push_back(ch);
 		txt = txt.substr(nextWordOffset);
@@ -315,9 +315,6 @@ std::vector<gui::Text::LineRange> gui::Text::findLineRanges(const std::vector<Re
 		}
 		lineNumbers[i] = lineNumber;
 		lineNumber += numNewlines;
-	}
-	for(size_t i=0; i<lineNumbers.size(); i++) {
-		fmt::print("{} -> :{}\n", chunks[i].u8text, lineNumbers[i]);
 	}
 
 	return IndicesToRanges(lineNumbers);

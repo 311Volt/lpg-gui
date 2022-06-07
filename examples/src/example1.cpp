@@ -57,6 +57,13 @@ int main()
 	desk.addChild(win);
 	desk.setWallpaper("Wallpaper");
 
+	gui::Window win1({200, 200}, {180, 180});
+	win1.give(std::make_unique<gui::TitleBar>());
+	win1.setTitle("test window");
+	gui::Text text1({200, 40}, {30, 30}, "test text");
+	win1.addChild(text1);
+	desk.addChild(win1);
+
 	win.addChild(chk);
 	win.addChild(scaleInfo);
 	win.addChild(upscale);

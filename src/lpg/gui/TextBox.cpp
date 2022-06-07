@@ -18,7 +18,7 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	viewPos = 0;
 	cursorPos = 0;
 
-	buffer = al::UStr::DecodeToUTF32(initialText);
+	buffer = al::ToUTF32(initialText);
 	updateText();
 	
 	cursor.setText("|");
@@ -39,7 +39,7 @@ void gui::TextBox::updateText()
 	auto cut = font->calcCutoffPoint(sub, getScreenRectangle().width());
 	sub = sub.substr(0, cut);
 	*/
-	txt.setText(al::UStr::EncodeToUTF8(buffer));
+	txt.setText(al::ToUTF8(buffer));
 }
 
 void gui::TextBox::insertCharacter(int position, int32_t codepoint)
@@ -59,11 +59,11 @@ void gui::TextBox::deleteCharacter(int position)
 
 std::string gui::TextBox::getText()
 {
-	return al::UStr::EncodeToUTF8(buffer);
+	return al::ToUTF8(buffer);
 }
 void gui::TextBox::setText(const std::string_view txt)
 {
-	buffer = al::UStr::DecodeToUTF32(txt);
+	buffer = al::ToUTF32(txt);
 	updateText();
 }
 

@@ -6,6 +6,7 @@
 
 #include <axxegro/Transform.hpp>
 #include <axxegro/event/EventQueue.hpp>
+#include <axxegro/event/EventDispatcher.hpp>
 #include <lpg/util/Log.hpp>
 
 lpg::IntegerMap<uint32_t, gui::Window*> gui::Window::idMap;
@@ -43,14 +44,19 @@ gui::Window::Window(al::Vec2<> size, al::Coord<> pos, Alignment align, EdgeType 
 	parent = nullptr;
 
 	drawTime = 0.00001;
-}
 
+	eventDispatcher.setDefaultHandler([this](const ALLEGRO_EVENT& ev){
+		for(const auto& childId: children) {
+			Window* win = GetWindowByID(childId);
+			if(!win) {
+				continue;
+			}
+			GetWindowByID(childId)->handleEvent(ev);
+		}
+	});
+}
 gui::Window::~Window()
 {
-	for(auto& evType: propagatedEvents) {
-		deleteEventHandler(evType);
-	}
-	
 	if(parent) {
 		parent->children.erase(id);
 	}
@@ -85,7 +91,6 @@ void gui::Window::render()
 	if(edgeType == EDGE_REGULAR) {
 		al::DrawRectangle(win, sh4);
 	} else if(edgeType == EDGE_BEVELED) {
-
 		al::DrawLine(win.bottomLeft(), win.bottomRight(), sh1);
 		al::DrawLine(win.topRight(), win.bottomRight(), sh1);
 		
@@ -111,6 +116,16 @@ void gui::Window::render()
 	drawChildren();
 }
 
+void gui::Window::registerEventHandlerProc(ALLEGRO_EVENT_TYPE evType, EventHandler handler)
+{
+	eventDispatcher.setEventTypeHandler(evType, handler);
+}
+
+void gui::Window::deleteEventHandler(ALLEGRO_EVENT_TYPE evType)
+{
+	eventDispatcher.deleteEventTypeHandler(evType);
+}
+
 void gui::Window::beginRender()
 {
 
@@ -127,7 +142,6 @@ void gui::Window::draw()
 	double tic = al::GetTime();
 	al::Transform tr;
 	tr.translate(rp);
-	//fmt::print("translation = {}, {}\n", rp.x, rp.y);
 	al::ScopedTransform st(tr);
 
 	if(!visible)
@@ -150,35 +164,6 @@ void gui::Window::draw()
 	drawTime = al::GetTime() - tic;
 }
 
-void gui::Window::registerEventHandlerProc(ALLEGRO_EVENT_TYPE type, gui::Window::EventHandler fn)
-{
-	if(eventHandlers.find(type) != eventHandlers.end()) {
-		deleteEventHandler(type);
-	}
-
-	eventHandlers[type] = fn;
-	if(parent) {
-		parent->acknowledgeChildEventHandlerRegistration(type);
-	}
-}
-
-void gui::Window::deleteEventHandler(ALLEGRO_EVENT_TYPE type)
-{
-	if(eventHandlers.find(type) == eventHandlers.end()) {
-		return;
-	}
-
-	eventHandlers.erase(type);
-	if(parent) {
-		parent->acknowledgeChildEventHandlerDeletion(type);
-	}
-}
-
-
-void gui::Window::onInput(ALLEGRO_EVENT* ev)
-{
-	propagateEvent(ev);
-}
 
 void gui::Window::onAdoption()
 {
@@ -193,11 +178,7 @@ void gui::Window::onRescale()
 
 void gui::Window::onTitleChange()
 {
-	for(auto& child: children) {
-		if(auto titleBar = dynamic_cast<TitleBar*>(GetWindowByID(child))) {
-			titleBar->setTitle(getTitle());
-		}
-	}
+
 }
 
 void gui::Window::onResize()
@@ -213,11 +194,7 @@ void gui::Window::drawChildren()
 
 	//sort by highest z-index, then highest id
 	std::sort(ids.begin(), ids.end(), [&](uint32_t l, uint32_t r){
-		int zl = idMap[l]->getZIndex();
-		int zr = idMap[r]->getZIndex();
-		if(zl != zr)
-			return zl > zr;
-		return l > r;
+		return idMap[l]->isDrawnBefore(*idMap[r]);
 	});
 
 	for(unsigned i=0; i<ids.size(); i++) {
@@ -228,33 +205,11 @@ void gui::Window::drawChildren()
 
 void gui::Window::handleEvent(const ALLEGRO_EVENT& ev)
 {
-	if(eventHandlers.count(ev.type)) {
-		eventHandlers[ev.type](ev);
-	}
-	for(auto& childID: children) {
-		//TODO !!!FIX THIS AND ENABLE THIS AGAIN!!!
-		//if(propagatedEvents.count(ev.type)) {
-			GetWindowByID(childID)->handleEvent(ev);
-		//}
-	}
-}
-
-void gui::Window::propagateEvent(ALLEGRO_EVENT* ev)
-{
-	for(auto& child: children) {
-		Window* ch = idMap[child];
-		if(ch->isFocused()) {
-			ch->onInput(ev);
-		}
-	}
+	eventDispatcher.dispatch(ev);
 }
 
 void gui::Window::addChild(Window& child)
 {
-	for(auto& [type, handler]: child.eventHandlers) {
-		acknowledgeChildEventHandlerRegistration(type);
-	}
-
 	child.parent = this;
 	children.insert(child.getID());
 	child.onAdoption();
@@ -267,9 +222,6 @@ void gui::Window::addChild(uint32_t id)
 
 void gui::Window::removeChild(Window& child)
 {
-	for(auto& [type, handler]: child.eventHandlers) {
-		acknowledgeChildEventHandlerDeletion(type);
-	}
 	child.parent = nullptr;
 	auto it = children.find(child.getID());
 	if(it == children.end()) {
@@ -311,6 +263,12 @@ void gui::Window::give(std::unique_ptr<Window> child)
 	ownedChildren[child->getID()] = std::move(child);
 }
 
+bool gui::Window::isDrawnBefore(Window &other) const
+{
+	if(zIndex != other.zIndex)
+		return zIndex > other.zIndex;
+	return id > other.id;
+}
 
 void gui::Window::setZIndex(int n)
 {
@@ -548,56 +506,25 @@ bool gui::Window::isFocused() const
 	return focused;
 }
 
-void gui::Window::acknowledgeChildEventHandlerRegistration(ALLEGRO_EVENT_TYPE type)
-{
-	for(Window* it=this; it; it=it->parent) {
-		it->propagatedEvents.insert(type);
-	}
-}
-
-void gui::Window::acknowledgeChildEventHandlerDeletion(ALLEGRO_EVENT_TYPE type)
-{
-	for(Window* it=this; it; it=it->parent) {
-		auto& pEv = it->propagatedEvents;
-		auto item = pEv.find(type);
-		if(item != pEv.end()) {
-			pEv.erase(item);
-		} else {
-			lpg::Log(1, fmt::format(
-				"warning: event {} handled by \"{}\" (#{}) not found in propagatedEvents of parent \"{}\" (#{}) (this should never happen)",
-				type,
-				getTitle(),
-				getID(),
-				it->getTitle(),
-				it->getID()
-			));
-		}
-	}
-}
-
 
 void gui::Window::normalizeChildrenZIndices()
 {
 	int idx = 0;
 
 	std::vector<uint32_t> sorted;
-	for(auto& child: children) {
-		sorted.push_back(idMap[child]->getID());
+	for(auto& childId: children) {
+		fmt::print("child of #{}: #{}\n", id, childId);
+		sorted.push_back(childId);
 	}
 
-	std::sort(sorted.begin(), sorted.end(), [&](uint32_t lhs, uint32_t rhs){
-		Window* l = idMap[lhs];
-		Window* r = idMap[rhs];
-		if(l->zIndex == r->zIndex)
-			return l->getID() < r->getID();
-		return l->zIndex < r->zIndex;
+	std::sort(sorted.begin(), sorted.end(), [&](uint32_t l, uint32_t r){
+		return idMap[l]->isDrawnBefore(*idMap[r]);
 	});
 
 	for(unsigned i=0; i<sorted.size(); i++) {
-		if(i && (idMap[i]->zIndex > idMap[i-1]->zIndex)) {
-			idx++;
-		}
-		idMap[i]->zIndex = idx;
+		auto cid = sorted[i];
+		idMap[cid]->zIndex = idx++;
+		fmt::print("{} #{}: zindex={}\n", idMap[cid]->className(), cid, idMap[cid]->zIndex);
 	}
 }
 

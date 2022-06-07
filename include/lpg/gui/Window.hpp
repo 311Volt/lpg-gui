@@ -56,17 +56,19 @@ namespace gui {
 			Alignment align = ALIGN_LEFT_TOP,
 			EdgeType edge = EDGE_BEVELED
 		);
+
+		Window(const Window&) = delete;
+		Window& operator=(const Window&) = delete;
+		Window(Window&&) = delete;
+		Window& operator=(Window&&) = delete;
+		
 		virtual ~Window();
 
 		virtual std::string_view className() const {return "Window";};
 		#define LPG_WIN_CLS_NAME(name) virtual std::string_view className() const override {return name;}
 
-		using EventHandler = std::function<void(const ALLEGRO_EVENT&)>;
-
-
 		virtual void tick();
 		virtual void render();
-		virtual void onInput(ALLEGRO_EVENT* ev);
 		virtual void onAdoption();
 		virtual void onRescale();
 		virtual void onTitleChange();
@@ -75,37 +77,37 @@ namespace gui {
 		void beginRender();
 		void endRender();
 
-		void draw();
+		using EventHandler = std::function<void(const ALLEGRO_EVENT&)>;
 
-		void drawChildren();
-		void handleEvent(const ALLEGRO_EVENT& ev);
-		void propagateEvent(ALLEGRO_EVENT* ev);
 
-		void registerEventHandlerProc(ALLEGRO_EVENT_TYPE type, EventHandler fn);
-		void deleteEventHandler(ALLEGRO_EVENT_TYPE type);
+		void registerEventHandlerProc(ALLEGRO_EVENT_TYPE evType, EventHandler handler);
+		void deleteEventHandler(ALLEGRO_EVENT_TYPE evType);
 
 		template<typename T>
 		using EventHandlerMember = void(T::*)(const ALLEGRO_EVENT&);
 
 		template<typename T>
-		void registerEventHandler(ALLEGRO_EVENT_TYPE type, EventHandlerMember<T> fn)
+		void registerEventHandler(ALLEGRO_EVENT_TYPE evType, EventHandlerMember<T> handler)
 		{
-			static_assert(std::is_base_of<Window, T>::value);
-			if(fn == nullptr) {
-				throw std::runtime_error("nullptr given as event handler");
-			}
-			registerEventHandlerProc(type, [this,fn](const ALLEGRO_EVENT& ev)->void{
-				T* p = static_cast<T*>(this);
-				(p->*fn)(ev);
+			registerEventHandlerProc(evType, [handler,this](const ALLEGRO_EVENT& ev){
+				if(T* win = dynamic_cast<T*>(this)) {
+					std::invoke(handler, win, ev);
+				}
 			});
 		}
 
+		void draw();
+
+		void drawChildren();
+		void handleEvent(const ALLEGRO_EVENT& ev);
 
 		void addChild(Window& child);
 		void addChild(uint32_t id);
 
 		void removeChild(Window& child);
 		void removeChild(uint32_t id);
+
+		bool isDrawnBefore(Window& other) const;
 
 		void give(std::unique_ptr<Window> child);
 
@@ -183,10 +185,11 @@ namespace gui {
 
 		//local management
 		std::unordered_map<uint32_t, std::unique_ptr<Window>> ownedChildren;
-		std::unordered_map<ALLEGRO_EVENT_TYPE, EventHandler> eventHandlers;
 		void normalizeChildrenZIndices();
 
 		/**********************************************/
+
+		al::EventDispatcher eventDispatcher;
 
 		//hierarchy
 		std::set<uint32_t> children;
@@ -217,10 +220,6 @@ namespace gui {
 		int zIndex;
 		bool focused;
 	private:
-		void acknowledgeChildEventHandlerRegistration(ALLEGRO_EVENT_TYPE type);
-		void acknowledgeChildEventHandlerDeletion(ALLEGRO_EVENT_TYPE type);
-
-		std::unordered_multiset<ALLEGRO_EVENT_TYPE> propagatedEvents;
 		static lpg::IntegerMap<uint32_t, Window*> idMap;
 
 		double drawTime;
