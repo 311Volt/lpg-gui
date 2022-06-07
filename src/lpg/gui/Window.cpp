@@ -524,7 +524,6 @@ void gui::Window::normalizeChildrenZIndices()
 	for(unsigned i=0; i<sorted.size(); i++) {
 		auto cid = sorted[i];
 		idMap[cid]->zIndex = idx++;
-		fmt::print("{} #{}: zindex={}\n", idMap[cid]->className(), cid, idMap[cid]->zIndex);
 	}
 }
 
