@@ -11,6 +11,10 @@
 #include <lpg/gui/Window.hpp>
 #include <lpg/resmgr/ResourceManager.hpp>
 
+/** @file
+ * The root window.
+ */
+
 namespace gui {
 
 	class Desktop : public Window {

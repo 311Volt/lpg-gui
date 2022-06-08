@@ -20,6 +20,8 @@ gui::Text::Text(const al::Vec2<> size, const al::Vec2<> pos, const std::string_v
 	textAlignment = ALIGN_LEFT_TOP;
 	setText(text);
 	setPadding({3,3,3,3});
+
+	needsUpdate = false;
 }
 
 gui::Text::Text()
@@ -31,7 +33,7 @@ gui::Text::Text()
 gui::Text& gui::Text::setText(const std::string_view buffer)
 {
 	this->buffer = al::ToUTF32(buffer);
-	update();
+	needsUpdate = true;
 	return *this;
 }
 
@@ -49,15 +51,19 @@ std::string gui::Text::getText()
 gui::Text& gui::Text::setPadding(const al::Rect<> padding)
 {
 	this->padding = padding;
+	needsUpdate = true;
 	return *this;
 }
 
 void gui::Text::resizeToFit()
 {
+	resize(ToUnits(al::CurrentDisplay.size()));
+	update();
 	if(currentRenderChunks.size() == 0) {
 		resize({5,5});
 	}
-	resize(getSpan().size());
+	resize(getSpan().size() + al::Vec2<>(4,4));
+	needsUpdate = true;
 }
 al::Rect<> gui::Text::getSpan() const
 {
@@ -74,7 +80,7 @@ al::Rect<> gui::Text::getSpan() const
 void gui::Text::setTextAlignment(Alignment alignment)
 {
 	textAlignment = alignment;
-	update();
+	needsUpdate = true;
 }
 gui::Window::Alignment gui::Text::getTextAlignment()
 {
@@ -84,7 +90,7 @@ gui::Window::Alignment gui::Text::getTextAlignment()
 void gui::Text::setTextColor(al::Color color)
 {
 	textColor = color;
-	update();
+	needsUpdate = true;
 }
 
 void gui::Text::update()
@@ -92,27 +98,42 @@ void gui::Text::update()
 	currentRenderChunks = buildRenderChunks(tokenize());
 	needsRedraw = true;
 }
+void gui::Text::updateIfNeeded()
+{
+	if(needsUpdate) {
+		update();
+		needsUpdate = false;
+	}
+}
 
 void gui::Text::onTitleChange()
 {
-	update();
+	needsUpdate = true;
 }
 
 void gui::Text::onResize()
 {
-	update();
+	needsUpdate = true;
+}
+
+void gui::Text::tick()
+{
+	if(needsUpdate) {
+		needsUpdate = false;
+		update();
+	}
 }
 
 void gui::Text::render()
 {
+	Window::render();
+	
 	auto fonts = getFonts(currentRenderChunks);
 
 	for(const auto& chunk: currentRenderChunks) {
 		const auto& fon = fonts[chunk.fontId];
 		fon->draw(chunk.u8text, chunk.color, chunk.region.a);
 	}
-
-	Window::drawChildren();
 }
 
 

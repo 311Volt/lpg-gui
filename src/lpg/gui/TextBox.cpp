@@ -10,7 +10,7 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	cursor.resize(this->dims);
 
 	txt.resize(getSize());
-	txt.setPos({4,0});
+	txt.setPos({0,0});
 	addChild(txt);
 	addChild(cursor);
 
@@ -18,18 +18,22 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	cursorPos = 0;
 
 	txt.setTextAlignment(ALIGN_LEFT_CENTER);
-	txt.setPadding({0,2,2,2});
+	txt.setPadding({4,2,2,2});
 	buffer = al::ToUTF32(initialText);
 	updateText();
 	
 	cursor.setText("|");
 	cursor.visible = false;
+	cursor.setPadding({0,0,0,0});
+	cursor.setTextAlignment(ALIGN_LEFT_CENTER);
 	
 	registerEventHandler(ALLEGRO_EVENT_KEY_CHAR, &TextBox::onKeyChar);
 	registerEventHandler(ALLEGRO_EVENT_MOUSE_BUTTON_DOWN, &TextBox::onMouseDown);
 	
 	setEdgeType(EDGE_BEVELED_INWARD);
 	setBgColor(al::RGB(255,255,255));
+
+	focused = false;
 }
 
 void gui::TextBox::updateText()
@@ -40,7 +44,11 @@ void gui::TextBox::updateText()
 	auto cut = font->calcCutoffPoint(sub, getScreenRectangle().width());
 	sub = sub.substr(0, cut);
 	*/
+
+
 	txt.setText(al::ToUTF8(buffer));
+	txt.updateIfNeeded();
+	cursor.setPos(al::Coord<>(txt.getSpan().b.x, 0));
 }
 
 void gui::TextBox::insertCharacter(int position, int32_t codepoint)
@@ -83,6 +91,16 @@ void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
 			insertCharacter(buffer.size(), ev.keyboard.unichar);
 		}
 	}
+}
+
+void gui::TextBox::tick()
+{
+	static constexpr double CURSOR_BLINK_FREQ = 2.0;
+	double x = fmod(al::GetTime() * CURSOR_BLINK_FREQ, 1.0);
+
+	cursor.visible = isFocused() && x<0.5;
+
+	Window::tick();
 }
 
 void gui::TextBox::render()

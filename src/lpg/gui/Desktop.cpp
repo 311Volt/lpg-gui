@@ -74,7 +74,7 @@ void gui::Desktop::mainLoop()
 		al::CurrentDisplay.flip();
 	}
 
-	printDrawTimeSummary();
+	//printDrawTimeSummary();
 }
 
 void gui::Desktop::onResizeEvent(const ALLEGRO_EVENT& ev)

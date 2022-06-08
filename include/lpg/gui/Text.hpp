@@ -51,6 +51,7 @@ namespace gui {
 		virtual void onTitleChange() override;
 		virtual void render() override;
 		virtual void onResize() override;
+		virtual void tick() override;
 
 		constexpr static char32_t TXT_FMT_CHAR = 0x00A7; //section sign
 	
@@ -76,9 +77,12 @@ namespace gui {
 		};
 		
 		using LineRange = std::pair<size_t,size_t>;
+		void updateIfNeeded();
 	private:
 		Alignment textAlignment;
 		void update();
+
+		bool needsUpdate;
 
 		Token parseToken(const std::u32string_view v);
 

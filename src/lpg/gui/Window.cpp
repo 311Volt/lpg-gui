@@ -21,7 +21,7 @@ gui::Window::Window(al::Vec2<> size, al::Coord<> pos, Alignment align, EdgeType 
 	} else {
 		setPos(pos);
 	}
-	
+
 	bgColor = al::RGB(192,192,192);
 	edgeType = edge;
 	alignment = align;
@@ -69,6 +69,17 @@ void gui::Window::tick()
 {
 	for(auto& child: children) {
 		idMap[child]->tick();
+	}
+
+	std::vector<uint32_t> toKill;
+	for(const auto& [id, win]: ownedChildren) {
+		if(win->exitFlag) {
+			toKill.push_back(id);
+		}
+	}
+
+	for(auto& id: toKill) {
+		ownedChildren.erase(id);
 	}
 }
 
@@ -226,6 +237,7 @@ void gui::Window::removeChild(Window& child)
 	if(it == children.end()) {
 		throw std::runtime_error("Window::removeChild() called on a non-child node");
 	}
+	ownedChildren.erase(child.getID());
 	children.erase(it);
 }
 
