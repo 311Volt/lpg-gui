@@ -22,6 +22,7 @@ gui::Slider::Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant)
 	valueFn([](uint16_t v){return v;}),
 	handle(size, {0,0}),
 	maxValue(65535),
+	value(0),
 	handleDragOffset(0),
 	beingDragged(false)
 {
