@@ -91,7 +91,7 @@ void gui::Window::render()
 
 	al::Color sh1 = al::Black;
 	al::Color sh2 = al::PremulRGBA(0,0,0,86);
-	al::Color sh3 = bgColor;
+	al::Color sh3 = al::LightGray;
 	al::Color sh4 = al::White;
 
 	al::DrawFilledRectangle(win, bgColor);
@@ -215,7 +215,10 @@ void gui::Window::drawChildren()
 
 void gui::Window::handleEvent(const ALLEGRO_EVENT& ev)
 {
-	eventDispatcher.dispatch(ev);
+	//TODO the visible check should only apply to user input events
+	if(visible) {
+		eventDispatcher.dispatch(ev);
+	}
 }
 
 void gui::Window::addChild(Window& child)

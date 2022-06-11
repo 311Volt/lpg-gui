@@ -30,16 +30,20 @@ namespace gui {
 		uint16_t getRawValue();
 		void setRawValue(uint16_t v);
 		void setValueFunction(ValueFn valueFn);
+		bool isBeingDragged() const;
 
 		static constexpr int DEFAULT_HANDLE_WIDTH = 24;
+		void onScroll(const ALLEGRO_EVENT& ev);
 	private:
 		void onMouseMove(const ALLEGRO_EVENT& ev);
+		void onMouseAxesIdle(const ALLEGRO_EVENT& ev);
 		Text caption;
 		ValueFn valueFn;
 		Button handle;
 		uint16_t maxValue;
 		uint16_t value;
 		int handleDragOffset;
+		bool beingDragged;
 	};
 }
 
