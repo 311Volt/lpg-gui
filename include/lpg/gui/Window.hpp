@@ -106,6 +106,8 @@ namespace gui {
 		void addChild(Window& child);
 		void addChild(uint32_t id);
 
+		void addChildren(const std::vector<std::reference_wrapper<Window>>& v);
+
 		void removeChild(Window& child);
 		void removeChild(uint32_t id);
 

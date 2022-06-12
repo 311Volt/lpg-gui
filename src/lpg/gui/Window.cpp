@@ -237,6 +237,13 @@ void gui::Window::addChild(uint32_t id)
 	addChild(*(idMap.at(id)));
 }
 
+void gui::Window::addChildren(const std::vector<std::reference_wrapper<Window>>& v)
+{
+	for(auto& win: v) {
+		addChild(win);
+	}
+}
+
 void gui::Window::removeChild(Window& child)
 {
 	child.parent = nullptr;
