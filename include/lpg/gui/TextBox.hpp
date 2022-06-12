@@ -17,6 +17,9 @@ namespace gui {
 		void setOnReturnCallback(std::function<void(void)> fn);
 		
 		LPG_WIN_CLS_NAME("TextBox");
+	
+	protected:
+		void updateText();
 	private:
 		std::function<void(void)> onReturn;
 		std::u32string buffer;
@@ -24,8 +27,6 @@ namespace gui {
 		int cursorPos;
 		Text txt;
 		Text cursor;
-		
-		void updateText();
 
 		void insertCharacter(int position, int32_t codepoint);
 		void deleteCharacter(int position);
