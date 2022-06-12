@@ -67,6 +67,8 @@ namespace gui {
 		virtual std::string_view className() const {return "Window";};
 		#define LPG_WIN_CLS_NAME(name) virtual std::string_view className() const override {return name;}
 
+		void renderBackground();
+
 		virtual void tick();
 		virtual void render();
 		virtual void onAdoption();

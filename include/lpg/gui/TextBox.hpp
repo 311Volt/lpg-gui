@@ -13,9 +13,12 @@ namespace gui {
 		
 		std::string getText();
 		void setText(const std::string_view txt);
+
+		void setOnReturnCallback(std::function<void(void)> fn);
 		
 		LPG_WIN_CLS_NAME("TextBox");
 	private:
+		std::function<void(void)> onReturn;
 		std::u32string buffer;
 		int viewPos;
 		int cursorPos;

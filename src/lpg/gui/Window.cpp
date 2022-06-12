@@ -83,7 +83,7 @@ void gui::Window::tick()
 	}
 }
 
-void gui::Window::render()
+void gui::Window::renderBackground()
 {
 	al::Rect<int> win = getRelScreenRectangle();
 	al::Vec2<float> ob1x = {1.0, 0};
@@ -122,7 +122,11 @@ void gui::Window::render()
 		al::DrawLine(inner.bottomLeft(), inner.bottomRight(), sh3);
 		al::DrawLine(inner.topRight(), inner.bottomRight(), sh3);
 	}
+}
 
+void gui::Window::render()
+{
+	renderBackground();
 	drawChildren();
 }
 
