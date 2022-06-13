@@ -2,6 +2,8 @@
 #include <lpg/gui/Window.hpp>
 
 #include <algorithm>
+
+#define FMT_HEADER_ONLY
 #include <fmt/format.h>
 
 #include <axxegro/Transform.hpp>

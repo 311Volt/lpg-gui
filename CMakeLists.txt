@@ -52,7 +52,6 @@ add_subdirectory("lunasvg")
 
 set(LPG_GUI_LIBS 
     axxegro
-    ${LIBFMT}
     lunasvg
     ${ALLEGRO_CORE} 
     ${ALLEGRO_MAIN} 
