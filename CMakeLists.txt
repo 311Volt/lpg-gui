@@ -21,6 +21,7 @@ option(AXXEGRO_MASTER_PROJECT OFF)
 add_subdirectory("axxegro")
 find_package(lunasvg REQUIRED)
 
+
 target_link_libraries(lpg_gui PUBLIC axxegro)
 target_link_libraries(lpg_gui PRIVATE ${lunasvg_LIBRARIES})
 target_include_directories(lpg_gui PRIVATE ${lunasvg_INCLUDE_DIRS})

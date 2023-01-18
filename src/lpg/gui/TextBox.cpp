@@ -36,6 +36,11 @@ gui::TextBox::TextBox(al::Vec2<> size, al::Vec2<> pos, const std::string& initia
 	focused = false;
 }
 
+void gui::TextBox::setOnReturnCallback(std::function<void(void)> fn)
+{
+	onReturn = fn;
+}
+
 void gui::TextBox::updateText()
 {
 	/*
@@ -87,7 +92,12 @@ void gui::TextBox::onKeyChar(const ALLEGRO_EVENT& ev)
 	if(isFocused()) {
 		if(ev.keyboard.keycode == ALLEGRO_KEY_BACKSPACE) {
 			deleteCharacter(buffer.size()-1);
-		} else if(ev.keyboard.unichar >= 32) {
+		} else if(ev.keyboard.keycode == ALLEGRO_KEY_ENTER) {
+			if(onReturn) {
+				onReturn();
+				setText("");
+			}
+		}else if(ev.keyboard.unichar >= 32) {
 			insertCharacter(buffer.size(), ev.keyboard.unichar);
 		}
 	}
@@ -105,7 +115,8 @@ void gui::TextBox::tick()
 
 void gui::TextBox::render()
 {
+	renderBackground();
 	al::TargetBitmap.setClippingRectangle(getScreenRectangle());
-	Window::render();
+	drawChildren();
 	al::TargetBitmap.resetClippingRectangle();
 }

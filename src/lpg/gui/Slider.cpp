@@ -22,7 +22,9 @@ gui::Slider::Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant)
 	valueFn([](uint16_t v){return v;}),
 	handle(size, {0,0}),
 	maxValue(65535),
-	handleDragOffset(0)
+	value(0),
+	handleDragOffset(0),
+	beingDragged(false)
 {
 	caption.resize(getSize());
 	caption.setTextAlignment(ALIGN_CENTER);
@@ -37,12 +39,16 @@ gui::Slider::Slider(al::Vec2<> size, al::Vec2<> pos, uint16_t quant)
 		handle.resize(DEFAULT_HANDLE_WIDTH, handle.getHeight());
 	}
 
+	registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Slider::onMouseAxesIdle);
+
         handle.setCallback([this](){
 		al::Coord<> cl = handle.getLastClickMousePos();
 		al::Coord<> sc = handle.getScreenRectangle().a;
 		handleDragOffset = isVertical() ? (cl.y-sc.y) : (cl.x-sc.x);
 		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Slider::onMouseMove);
+		beingDragged = true;
 	});
+
 	handle.setTrigger(std::make_pair(Button::State::HOVER, Button::State::DOWN));
 	handle.setTitle("");
 	caption.setAlignment(ALIGN_CENTER);
@@ -63,21 +69,12 @@ void gui::Slider::onMouseMove(const ALLEGRO_EVENT& ev)
 
                 float f = (mp-m0) / (m1-m0);
                 setRawValue(f*maxValue);
-
-		al::Rect<> r = getRect(), hr = handle.getRect();
-		float s0 = isVertical() ? r.a.y : r.a.x;
-		float s1 = isVertical() ? (r.b.y-hr.size().y) : (r.b.x-hr.size().x);
-		float fp = ((float)value/(float)maxValue);
-		float sp = fp*(s1-s0);
-		if(isVertical()) {
-			handle.setPos(al::Coord<>(handle.getRelX(), sp));
-		} else {
-			handle.setPos(al::Coord<>(sp, handle.getRelY()));
-		}
-
 	} else {
-		deleteEventHandler(ALLEGRO_EVENT_MOUSE_AXES);
+		registerEventHandler(ALLEGRO_EVENT_MOUSE_AXES, &Slider::onMouseAxesIdle);
+		beingDragged = false;
 	}
+
+	handle.handleEvent(ev);
 }
 
 void gui::Slider::setQuantization(uint16_t newMaxValue)
@@ -93,6 +90,11 @@ bool gui::Slider::isVertical()
 	return getHeight()>getWidth();
 }
 
+bool gui::Slider::isBeingDragged() const
+{
+	return beingDragged;
+}
+
 double gui::Slider::getValue()
 {
 	return valueFn(value);
@@ -101,6 +103,19 @@ double gui::Slider::getValue()
 uint16_t gui::Slider::getRawValue()
 {
 	return value;
+}
+
+void gui::Slider::onScroll(const ALLEGRO_EVENT& ev)
+{
+	setRawValue(std::clamp<int32_t>(getRawValue()-ev.mouse.dz, 0, maxValue));
+}
+
+void gui::Slider::onMouseAxesIdle(const ALLEGRO_EVENT& ev)
+{
+	if(IsMouseInRect(ev, getScreenRectangle())) {
+		onScroll(ev);
+	}
+	handle.handleEvent(ev);
 }
 
 void gui::Slider::setRawValue(uint16_t v)
@@ -112,7 +127,22 @@ void gui::Slider::setRawValue(uint16_t v)
 		));
 		return;
 	}
+
 	value = v;
+
+	if(maxValue) { //reposition the handle
+		al::Rect<> r = getRect(), hr = handle.getRect();
+		float s0 = isVertical() ? r.a.y : r.a.x;
+		float s1 = isVertical() ? (r.b.y-hr.size().y) : (r.b.x-hr.size().x);
+		float fp = ((float)value/(float)maxValue);
+		float sp = fp*(s1-s0);
+		if(isVertical()) {
+			handle.setPos(al::Coord<>(handle.getRelX(), sp));
+		} else {
+			handle.setPos(al::Coord<>(sp, handle.getRelY()));
+		}
+	}
+
 	auto cText = std::format("{}",value);
 	caption.setText(cText);
 }

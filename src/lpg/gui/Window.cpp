@@ -83,7 +83,7 @@ void gui::Window::tick()
 	}
 }
 
-void gui::Window::render()
+void gui::Window::renderBackground()
 {
 	al::Rect<int> win = getRelScreenRectangle();
 	al::Vec2<float> ob1x = {1.0, 0};
@@ -91,7 +91,7 @@ void gui::Window::render()
 
 	al::Color sh1 = al::Black;
 	al::Color sh2 = al::PremulRGBA(0,0,0,86);
-	al::Color sh3 = bgColor;
+	al::Color sh3 = al::LightGray;
 	al::Color sh4 = al::White;
 
 	al::DrawFilledRectangle(win, bgColor);
@@ -122,7 +122,11 @@ void gui::Window::render()
 		al::DrawLine(inner.bottomLeft(), inner.bottomRight(), sh3);
 		al::DrawLine(inner.topRight(), inner.bottomRight(), sh3);
 	}
+}
 
+void gui::Window::render()
+{
+	renderBackground();
 	drawChildren();
 }
 
@@ -215,7 +219,10 @@ void gui::Window::drawChildren()
 
 void gui::Window::handleEvent(const ALLEGRO_EVENT& ev)
 {
-	eventDispatcher.dispatch(ev);
+	//TODO the visible check should only apply to user input events
+	if(visible) {
+		eventDispatcher.dispatch(ev);
+	}
 }
 
 void gui::Window::addChild(Window& child)
@@ -228,6 +235,13 @@ void gui::Window::addChild(Window& child)
 void gui::Window::addChild(uint32_t id)
 {
 	addChild(*(idMap.at(id)));
+}
+
+void gui::Window::addChildren(const std::vector<std::reference_wrapper<Window>>& v)
+{
+	for(auto& win: v) {
+		addChild(win);
+	}
 }
 
 void gui::Window::removeChild(Window& child)

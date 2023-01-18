@@ -13,16 +13,20 @@ namespace gui {
 		
 		std::string getText();
 		void setText(const std::string_view txt);
+
+		void setOnReturnCallback(std::function<void(void)> fn);
 		
 		LPG_WIN_CLS_NAME("TextBox");
-	private:
+	
+	protected:
+		virtual void updateText();
+		Text txt;
 		std::u32string buffer;
+
+		std::function<void(void)> onReturn;
 		int viewPos;
 		int cursorPos;
-		Text txt;
 		Text cursor;
-		
-		void updateText();
 
 		void insertCharacter(int position, int32_t codepoint);
 		void deleteCharacter(int position);

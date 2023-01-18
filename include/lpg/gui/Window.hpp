@@ -67,6 +67,8 @@ namespace gui {
 		virtual std::string_view className() const {return "Window";};
 		#define LPG_WIN_CLS_NAME(name) virtual std::string_view className() const override {return name;}
 
+		void renderBackground();
+
 		virtual void tick();
 		virtual void render();
 		virtual void onAdoption();
@@ -103,6 +105,8 @@ namespace gui {
 
 		void addChild(Window& child);
 		void addChild(uint32_t id);
+
+		void addChildren(const std::vector<std::reference_wrapper<Window>>& v);
 
 		void removeChild(Window& child);
 		void removeChild(uint32_t id);

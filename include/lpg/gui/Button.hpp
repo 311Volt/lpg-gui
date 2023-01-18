@@ -43,15 +43,15 @@ namespace gui {
 		State state;
 		std::pair<State,State> trigger;
 		void setState(State state, const ALLEGRO_EVENT& cause);
-	private:
 		virtual void updateAppearance();
+		Text caption;
+	private:
 
 		void onMouseDown(const ALLEGRO_EVENT& ev);
 		void onMouseUp(const ALLEGRO_EVENT& ev);
 		void onMouseMove(const ALLEGRO_EVENT& ev);
 
 		al::Coord<int> clickPos;
-		Text caption;
 		CallbackT callback;
 	};
 }
