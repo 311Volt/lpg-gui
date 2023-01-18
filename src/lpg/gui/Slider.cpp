@@ -106,14 +106,14 @@ uint16_t gui::Slider::getRawValue()
 void gui::Slider::setRawValue(uint16_t v)
 {
 	if(v > maxValue) {
-		lpg::Log(2, fmt::format(
+		lpg::Log(2, std::format(
 			"slider #{}: setRawValue: given value {} is larger than maxValue {}, ignoring",
 			getID(), v, maxValue
 		));
 		return;
 	}
 	value = v;
-	auto cText = fmt::format("{}",value);
+	auto cText = std::format("{}",value);
 	caption.setText(cText);
 }
 

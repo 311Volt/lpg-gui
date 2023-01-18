@@ -2,7 +2,7 @@
 #define INCLUDE_LPG_UTIL_LOG
 
 #include <iostream>
-#include <fmt/format.h>
+#include <format>
 
 namespace lpg {
 

@@ -1,3 +1,6 @@
+
+#include <format>
+
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_native_dialog.h>
 
@@ -10,8 +13,6 @@
 #include <iostream>
 #include <cmath>
 
-
-#include <fmt/format.h>
 
 int main()
 {
@@ -39,14 +40,14 @@ int main()
 	upscale.setTitle("Scale+");
 	upscale.setCallback([&](){
 		gui::Window::SetEnvScale(gui::Window::GetEnvScale() * 1.2);
-		scaleInfo.setText(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
+		scaleInfo.setText(std::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
 	});
 
 	gui::Button downscale({70, 30}, {20, 115});
 	downscale.setTitle("Scale-");
 	downscale.setCallback([&](){
 		gui::Window::SetEnvScale(gui::Window::GetEnvScale() / 1.2);
-		scaleInfo.setText(fmt::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
+		scaleInfo.setText(std::format("Scale: {:.2f}", gui::Window::GetEnvScale()));
 	});
 
 	gui::Image stealie("SVGTest", {50, 150});
@@ -73,7 +74,7 @@ int main()
 	win.addChild(slider);
 	win.addChild(tb);
 	
-#ifdef WIN32
+#if defined(WIN32) || defined(_WIN32)
 	gui::Window dzi00b({290, 200}, {1, 1});
 	gui::Text dziub({280, 190}, {10, 10});
 	al::Config dziubCfg("dziub/default.ini");

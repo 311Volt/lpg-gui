@@ -2,7 +2,7 @@
 #include <lpg/gui/Window.hpp>
 
 #include <algorithm>
-#include <fmt/format.h>
+#include <format>
 
 #include <axxegro/Transform.hpp>
 #include <axxegro/event/EventQueue.hpp>
@@ -28,7 +28,7 @@ gui::Window::Window(al::Vec2<> size, al::Coord<> pos, Alignment align, EdgeType 
 
 	id = idMap.insert(this);
 
-	title = fmt::format("Unnamed {} [#{}]", className(), id);
+	title = std::format("Unnamed {} [#{}]", className(), id);
 	creationTime = al::GetTime();
 
 	zIndex = 0;
@@ -161,7 +161,7 @@ void gui::Window::draw()
 		render();
 	} else {
 		if(needsRedraw) {
-			lpg::Log(3, fmt::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()));
+			lpg::Log(3, std::format("prerendering window #{1:} ({2:}) to bmp {0:p}",(void*)winFrameBuffer->ptr(), getID(), getTitle()));
 			al::ScopedTargetBitmap tb(*winFrameBuffer);
 			al::TargetBitmap.clearToColor(al::RGBA(0,0,0,0));
 			render();
@@ -249,17 +249,17 @@ void gui::Window::printDrawTimeSummary()
 		return idMap[lhs]->drawTime > idMap[rhs]->drawTime;
 	});
 
-	fmt::print("draw time of every window in the last frame: \n");
+	std::cout << std::format("draw time of every window in the last frame: \n");
 	for(auto& id: ids) {
 		Window* win = idMap[id];
 		std::string ts = "not measurable";
 		if(win->drawTime != 0.0) {
-			ts = fmt::format("{:.2f} us ({:.2f} Hz)", win->drawTime*1000000.0, 1.0/win->drawTime);
+			ts = std::format("{:.2f} us ({:.2f} Hz)", win->drawTime*1000000.0, 1.0/win->drawTime);
 		}
-		fmt::print("  [#{}] -> {} \"{}\": {}\n", id, win->className(), win->getTitle(), ts);
+		std::cout << std::format("  [#{}] -> {} \"{}\": {}\n", id, win->className(), win->getTitle(), ts);
 	}
 	
-	fmt::print("\n");
+	std::cout << std::format("\n");
 }
 
 void gui::Window::removeChild(uint32_t id)
@@ -378,10 +378,10 @@ float gui::Window::getHeight() const
 void gui::Window::resize(al::Vec2<> newDims)
 {
 	if(newDims.x < 0 || newDims.y < 0) {
-		throw std::runtime_error(fmt::format("cannot resize window to {}x{}", newDims.x, newDims.y));
+		throw std::runtime_error(std::format("cannot resize window to {}x{}", newDims.x, newDims.y));
 	}
 	dims = newDims;
-	if(winFrameBuffer && winFrameBuffer->size() != getScreenRectangle().size()) {
+	if(winFrameBuffer && winFrameBuffer->size() != al::Vec2i(getScreenRectangle().size())) {
 		al::Vec2<> newss = getScreenSize();
 		winFrameBuffer = std::make_unique<al::Bitmap>(newss.x, newss.y);
 		needsRedraw = true;
@@ -540,8 +540,8 @@ float gui::Window::GetEnvScale()
 void gui::Window::SetEnvScale(float envScale)
 {
 	if(envScale <= 0.01f || envScale > 100.0f) {
-		lpg::Log(2, fmt::format(
-			"new EnvScale ({.2f}) outside of acceptable range (.01-100), keeping it at {.2f}\n",
+		lpg::Log(2, std::format(
+			"new EnvScale ({:.2f}) outside of acceptable range (.01-100), keeping it at {:.2f}\n",
 			envScale, EnvScale
 		));
 		return;

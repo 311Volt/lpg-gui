@@ -2,7 +2,7 @@
 
 #include <axxegro/event/EventQueue.hpp>
 
-#include <fmt/format.h>
+#include <format>
 
 gui::Desktop::Desktop()
 	: Window(al::CurrentDisplay.size(), {0, 0})

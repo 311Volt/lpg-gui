@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <numeric>
 
-#include <fmt/format.h>
+#include <format>
 
 
 

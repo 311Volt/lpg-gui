@@ -1,7 +1,7 @@
 #include <lpg/gui/Mouse.hpp>
 
 #include <iostream>
-#include <fmt/format.h>
+#include <format>
 
 bool gui::IsMouseInRect(const ALLEGRO_EVENT& ev, const al::Rect<int>& r)
 {

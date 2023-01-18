@@ -5,7 +5,7 @@
 
 #include <lpg/util/Log.hpp>
 
-#include <fmt/format.h>
+#include <format>
 #include <allegro5/allegro.h>
 
 
@@ -38,12 +38,12 @@ al::Bitmap* lpg::SVGLoader::createObject()
 	int targetWidth = scale.x * document->width();
 	int targetHeight = scale.y * document->height();
 
-	lpg::Log(3, fmt::format("creating a {}x{} bitmap from {}\n", targetWidth, targetHeight, filename));
+	lpg::Log(3, std::format("creating a {}x{} bitmap from {}\n", targetWidth, targetHeight, filename));
 
 
 	lunasvg::Bitmap render = document->renderToBitmap(targetWidth, targetHeight);
 	if(!render.valid()) {
-		throw al::ResourceLoadError(fmt::format(
+		throw al::ResourceLoadError(std::format(
 			"Error while rendering SVG (loaded from \"{}\") to a {}x{} bitmap",
 			filename,
 			targetWidth, targetHeight
@@ -53,11 +53,11 @@ al::Bitmap* lpg::SVGLoader::createObject()
 	std::unique_ptr<al::Bitmap> ret = std::make_unique<al::Bitmap>(targetWidth, targetHeight);
 	ret->clearToColor(al::RGBA(0,0,0,0));
 	{
-		al::BitmapLockedRegion lr(*ret, ALLEGRO_PIXEL_FORMAT_ABGR_8888, ALLEGRO_LOCK_WRITEONLY);
+		al::BitmapLockedRegion lr(*ret, ALLEGRO_PIXEL_FORMAT_ARGB_8888, ALLEGRO_LOCK_WRITEONLY);
 
 		for(int y=0; y<targetHeight; y++) {
 			uint32_t* srcLine = (uint32_t*)(render.data() + 4*targetWidth*y);
-			uint32_t* dstLine = (uint32_t*)lr.rowData(y);
+			uint32_t* dstLine = lr.rowData<uint32_t>(y);
 
 			for(int x=0; x<targetWidth; x++) {
 				uint32_t tmp = lunaAlphaPremul(srcLine[x]);

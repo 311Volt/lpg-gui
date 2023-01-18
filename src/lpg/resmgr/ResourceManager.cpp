@@ -3,7 +3,7 @@
 
 #include <lpg/util/StrManip.hpp>
 
-#include <fmt/format.h>
+#include <format>
 
 #include <axxegro/resources/Bitmap.hpp>
 #include <axxegro/resources/Font.hpp>
@@ -19,11 +19,11 @@ void lpg::ResourceManager::loadFromConfig(const al::Config& cfg)
 {
 	lpg::Log(3, "initializing ResourceManager from config");
 	for(const auto& sectionName: cfg.sections()) {
-		lpg::Log(3, fmt::format("section [{}]", sectionName));
+		lpg::Log(3, std::format("section [{}]", sectionName));
 		for(const auto& key: cfg.keys(sectionName)) {
 			const auto& value = cfg.getValue(sectionName, key);
 			auto rID = addResource(sectionName, key, value);
-			lpg::Log(3, fmt::format("    adding [{}]: {} -> {} [#{}]", sectionName, key, value, rID));
+			lpg::Log(3, std::format("    adding [{}]: {} -> {} [#{}]", sectionName, key, value, rID));
 		}
 	}
 }
@@ -34,14 +34,14 @@ void lpg::ResourceManager::registerLoader(const std::string& typeName, lpg::Reso
 lpg::ResourceID lpg::ResourceManager::addResource(const std::string& type, const std::string& name, const std::string& args)
 {
 	if(loaders.count(type) == 0) {
-		throw ResourceLoaderNotRegistered(fmt::format(
+		throw ResourceLoaderNotRegistered(std::format(
 			"cannot load \"{}\" as \"{}\": loader for {} not registered",
 			args, name, type
 		));
 	}
 	auto loader = loaders[type];
 	if(!loader) {
-		throw ResourceLoaderNotRegistered(fmt::format(
+		throw ResourceLoaderNotRegistered(std::format(
 			"empty loader given for [{}]",
 			type
 		));
@@ -60,7 +60,7 @@ lpg::ResourceID lpg::ResourceManager::getIdOf(const std::string& resourceName)
 	try {
 		return nameMap.at(resourceName);
 	} catch(std::out_of_range& e) {
-		throw ResourceNotFound(fmt::format(
+		throw ResourceNotFound(std::format(
 			"resource with name={} not found",
 			resourceName
 		));
@@ -73,7 +73,7 @@ std::string lpg::ResourceManager::getNameOf(lpg::ResourceID id)
 	try {
 		return idMap.at(id);
 	} catch(std::out_of_range& e) {
-		throw ResourceNotFound(fmt::format(
+		throw ResourceNotFound(std::format(
 			"resource with id={} not found",
 			id
 		));
@@ -85,7 +85,7 @@ void lpg::ResourceManager::checkUnique(lpg::ResourceID id)
 {
 	auto& res = resources[id];
 	if(res->refCount() > 1) {
-		throw ResourcePtrNotUnique(fmt::format(
+		throw ResourcePtrNotUnique(std::format(
 			"ResourceManager: stray reference to a resource (id={}, name=\"{}\") detected. "
 			"Do not store shared_ptrs to resources in between frames",
 			id, 
@@ -125,7 +125,7 @@ void lpg::ResourceManager::releaseAllResources()
 
 void lpg::ResourceManager::throwMismatch(const std::type_info& expected, const std::type_info& actual, lpg::ResourceID id)
 {
-	throw ResourceTypeMismatch(fmt::format(
+	throw ResourceTypeMismatch(std::format(
 		"resource type mismatch: get<{}> called on \"{}\" (id={}), which holds a resource of type {}",
 		expected.name(),
 		idMap[id],
@@ -139,7 +139,7 @@ lpg::IManagedResource* lpg::ResourceManager::getHandle(lpg::ResourceID id)
 	try {
 		return (lpg::IManagedResource*)resources.at(id).get();
 	} catch(std::out_of_range& e) {
-		throw ResourceNotFound(fmt::format(
+		throw ResourceNotFound(std::format(
 			"resource with id={} not found",
 			id
 		));

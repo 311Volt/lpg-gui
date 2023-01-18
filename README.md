@@ -1,27 +1,27 @@
 # lpg-gui
 
 A general-purpose, hardware-accelerated, retained-mode GUI library built with 
-C++17 and [axxegro](https://github.com/311Volt/axxegro)
+C++20 and [axxegro](https://github.com/311Volt/axxegro)
 that can be used for games as well as other applications.
 
-## design goals
+## future design goals
 
- - full hardware acceleration while still providing fallbacks for ancient machines
+ - full hardware acceleration while still providing fallbacks for older machines
  - support for vector graphics and full scalability for any pixel density
- - looks exactly the same, pixel for pixel, on every compatible platform
+ - looks exactly the same on every compatible platform
  - maximum support for themeability - in particular, make it as easy as possible
    to make fancy non-flat themes: it's been over a decade, it's time for 
    the ugly and braincell-destroying flat design to die already
- - high performance, obviously
+ - high performance
 
-## progress
-
-you're never gonna guess: it's in super early development lol
-
-however, i really care about getting this project done and develop it
-every chance i get, so... come back in a year
+## features so far
+ - windows and basic controls
+ - vector graphics
+ - scalability
+ - lots of bugs and bad code
 
 # how to build
- - install/build allegro5 and axxegro
- - copy things to `deps/lib` and `deps/include` as needed
- - run cmake and then make
+ - clone this repo with submodules
+ - install [allegro5](https://github.com/liballeg/allegro5) and [lunasvg](https://github.com/sammycage/lunasvg)
+   to your toolchain or `CMAKE_PREFIX_PATH` 
+ - run CMake

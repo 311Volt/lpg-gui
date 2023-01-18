@@ -1,7 +1,7 @@
 #include <lpg/util/Log.hpp>
 
 #include <axxegro/time/Time.hpp>
-#include <fmt/format.h>
+#include <format>
 
 lpg::CLog lpg::Log;
 
@@ -16,7 +16,7 @@ void lpg::CLog::operator()(int minVerbosity, const std::string& msg)
 {
 	if(verbosity < minVerbosity)
 		return;
-	(*defaultOutput) << fmt::format(
+	(*defaultOutput) << std::format(
 		"[{0:.3f}] {1}\n",
 		al::GetTime(),
 		msg

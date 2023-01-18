@@ -25,7 +25,7 @@ Memory - O(n) in the value of the largest key
 #include <optional>
 #include <queue>
 
-#include <fmt/format.h>
+#include <format>
 
 namespace lpg {
 
